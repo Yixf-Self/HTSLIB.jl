@@ -1,6 +1,6 @@
 # HTSLIB
 
-This package will be ready for users in a month. Welcome for everyone to give advices.
+This package will be ready for users in a month. Welcome for everyone to give me advices.
 
 
 ### Doing
