@@ -1,5 +1,9 @@
+src = "../src"
+if !in(src,LOAD_PATH)
+    push!(LOAD_PATH, src)
+end
 using HTSLIB
 using Base.Test
 
-# write your own tests here
-@test 1 == 1
+include("sam.jl")
+include("bam.jl")
