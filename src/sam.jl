@@ -1,7 +1,20 @@
+abstract Header
+
+type BamHeader <: Header
+    n_targets::Int32
+    ignore_sam_err::Int32
+    l_text::UInt32
+    target_len::Array{UInt32,1}
+    cigar_tab::Array{Int8,1}
+    target_name::Array{ASCIIString,1}
+    text::ASCIIString
+    sdict::Ptr{Void}
+end
+
 
 @doc """ return  htsFile * file handle
 """ ->
-function sam_open(fn::AbstractString,mode::AbstractString)
+function sam_open(fn::AbstractString, mode::AbstractString)
     ccall((:hts_open,"libhts"),Ptr{Void},(Cstring,Cstring),fn,mode)
 end
 @doc """ not tested
