@@ -15,13 +15,13 @@ end
 type Bam1_core_t
     tid::Int32
     pos::Int32
-    bin_qual_lqname::BinQualLqname
-    #bin::UInt16
-    #qual::UInt8
-    #l_qname::UInt8
-    flag_ncigar::FlagNCigar
-#   flag::UInt16
-#   n_cigar::UInt16
+    #bin_qual_lqname::BinQualLqname
+    bin::UInt16
+    qual::UInt8
+    l_qname::UInt8
+    #flag_ncigar::FlagNCigar
+    flag::UInt16
+    n_cigar::UInt16
     l_qseq::Int32
     mtid::Int32
     mpos::Int32
@@ -29,11 +29,31 @@ type Bam1_core_t
 end
 
 type Bam1_t
-    core::Ptr{Bam1_core_t}
+#    core::Bam1_core_t
+    tid::Int32
+    pos::Int32
+    #bin_qual_lqname::BinQualLqname
+    bin::UInt16
+    qual::UInt8
+    l_qname::UInt8
+    #flag_ncigar::FlagNCigar
+    flag::UInt16
+    n_cigar::UInt16
+    l_qseq::Int32
+    mtid::Int32
+    mpos::Int32
+    isize::Int32
+    
     l_data::Int32
     m_data::Int32
     data::Ptr{Cuchar}#Ref{UInt8}
     id::UInt64
+end
+
+function show(b::Ptr{Bam1_t})
+    record = unsafe_load(b)
+    string = bytestring(record.data)
+    println(string,"\t",record)
 end
 
 type Bins
@@ -45,7 +65,6 @@ end
 typealias bins Bins
 
 type hts_itr_t
-    
 end
 type hts_idx_t
 end
@@ -77,7 +96,6 @@ end
 type bam_hdr_t
 end
 
-
 function sam_open(fn,mode)
     ccall((:hts_open,"libhts"),Ptr{Void},(Cstring,Cstring),fn,mode)
 end
@@ -93,9 +111,8 @@ function bam_init1()
     ccall((:bam_init1,"libhts"), Ptr{Bam1_t}, ())
 end
 function sam_read1!(samfile,bamheader,b)
-    record = ccall((:sam_read1,"libhts"),Cint,(Ptr{Void},Ptr{Void},Ptr{Bam1_t}),samfile,bamheader,b)
+    r = ccall((:sam_read1,"libhts"),Cint,(Ptr{Void},Ptr{Void},Ptr{Bam1_t}),samfile,bamheader,b)
 #    re = unsafe_load(record)
-
 end
 
 function sam_itr_next()

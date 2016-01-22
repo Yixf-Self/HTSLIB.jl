@@ -8,8 +8,7 @@ record = bam_init1()
 
 while true
     r = sam_read1!(fp,bamheader,record)
-    @show unsafe_load(record)
-    @show unsafe_load(record).core
+    HTSLIB.show(record)
     sleep(2)
 end
 
