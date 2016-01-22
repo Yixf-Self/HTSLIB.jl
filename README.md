@@ -4,6 +4,12 @@ This package will be ready for users in a month. Welcome for everyone to give me
 
 Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/GeneMisc.jl.svg?branch=master)](https://travis-ci.org/OpenGene/HTSLIB.jl)
 
-### Doing
+### Important API
+- bam\_open
+- bam\_read
+- bam\_close
 
-read bam
+### Doing
+- The name of data types and functions
+- bam read and write
+
