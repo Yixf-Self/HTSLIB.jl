@@ -6,4 +6,4 @@ Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/GeneMisc.jl.svg?bran
 
 ### Doing
 
-wrapping bgzf relevant codes
+read bam
