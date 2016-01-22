@@ -15,8 +15,8 @@
 
 int main(int argc, char** argv){
 
-  hts_itr_t *iter = NULL;
-  hts_idx_t *idx  = NULL;
+  //hts_itr_t *iter = NULL;
+  //  hts_idx_t *idx  = NULL;
   samFile *in = NULL;
   bam1_t *b = NULL;
   bam_hdr_t *header = NULL;
@@ -38,6 +38,7 @@ int main(int argc, char** argv){
     printf("%s\n","sam_hdr_read passed");
   }
   
+  /*
   idx = sam_index_load(in, bam_fl);
   if (idx == NULL) {
     printf("bam file name is %s\t",bam_fl);
@@ -51,14 +52,21 @@ int main(int argc, char** argv){
   if (iter == NULL) return -1;
   printf("%s\n","sam_itr_querys passed");
   
-  b = bam_init1();
-  printf("%s\n","bam_init1 passed");
   
+  printf("%s\n","bam_init1 passed");
+  */
+  /*  
   while (sam_itr_next(in,iter,b) >= 0){
     fputs("DO STUFF\n",stdout);
   }
-  
-  hts_itr_destroy(iter);
+  */
+  b = bam_init1();
+  int r = 0;
+  while ((r = sam_read1(in,header,b)) >= 0){
+    printf("%s\n",b->data);
+  }
+
+  //  hts_itr_destroy(iter);
   bam_destroy1(b);
   bam_hdr_destroy(header);
   sam_close(in);
