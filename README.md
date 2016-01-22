@@ -11,5 +11,5 @@ Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/GeneMisc.jl.svg?bran
 
 ### Doing
 - The name of data types and functions
-- bam read and write
-
+- bam read
+- bai query
