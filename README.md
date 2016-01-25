@@ -7,9 +7,11 @@ Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/GeneMisc.jl.svg?bran
 ### Important API
 - bam\_open
 - bam\_read
+- bam\_write
 - bam\_close
 
 ### Doing
 - The name of data types and functions
 - bam read
+- bam write
 - bai query
