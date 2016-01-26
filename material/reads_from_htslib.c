@@ -52,7 +52,6 @@ int main(int argc, char** argv){
   if (iter == NULL) return -1;
   printf("%s\n","sam_itr_querys passed");
   
-  
   printf("%s\n","bam_init1 passed");
   */
   /*  
@@ -63,7 +62,14 @@ int main(int argc, char** argv){
   b = bam_init1();
   int r = 0;
   while ((r = sam_read1(in,header,b)) >= 0){
-    printf("%s\n",b->data);
+    printf("length of current data %d\n",b->l_data);
+    int i;
+    //   for(i=0;i<b->l_data;i++)
+    //      printf("%s",b->data[i]);
+    printf("\n");
+    printf("%s\n",bam_aux2Z(bam_get_aux(b)));
+    printf("\n");
+    break;
   }
 
   //  hts_itr_destroy(iter);

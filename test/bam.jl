@@ -1,14 +1,19 @@
 const bam_fl = "data/test.bam"
 
-fp = sam_open(bam_fl,"r")
+fp = HTSLIB.bam_open(bam_fl,"r")
 
-bamheader = sam_hdr_read(fp)
+bamheader = HTSLIB.bam_hdr_read(fp)
 
-record = bam_init1()
-
+record = HTSLIB.bam_init()
+ks = HTSLIB.KString(0,0,C_NULL)
 while true
-    r = sam_read1!(fp,bamheader,record)
-    HTSLIB.show(record)
+    r = HTSLIB.bam_read!(fp,bamheader,record)
+    pks = convert(Ptr{HTSLIB.KString},pointer_from_objref(ks))
+    HTSLIB.sam_format!(bamheader,record,pks)
+    HTSLIB.show(STDOUT,ks)
+    #@show unsafe_load(ks.s,1)
+    #@show ks
+    #HTSLIB.show(STDOUT,unsafe_load(record))
     sleep(2)
 end
 

@@ -1,6 +1,11 @@
 
 # what is the difference between Ref{Cint} and Ptr{Cint}
 
+info("$(@__FILE__) is deprecated!")
+
+immutable Bamrecord
+end
+
 type BinQualLqname
     bin::UInt16
     qual::UInt8
@@ -64,37 +69,6 @@ end
 
 typealias bins Bins
 
-type hts_itr_t
-end
-type hts_idx_t
-end
-type KString
-    l::Csize_t
-    m::Csize_t
-    s::Ptr{Char}
-end
-type BGZF
-    
-end
-type Cram_fd
-
-end
-type HFile
-
-end
-
-type samFile
-    dummy5::UInt32
-    lineno::Int64
-    line::KString
-    fn::Ptr{Cchar}
-    fn_aux::Ptr{Cchar}
-    fp
-    format
-end
-
-type bam_hdr_t
-end
 
 function sam_open(fn,mode)
     ccall((:hts_open,"libhts"),Ptr{Void},(Cstring,Cstring),fn,mode)

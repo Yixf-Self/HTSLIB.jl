@@ -10,9 +10,8 @@ export sam_open,
 
 
 
-
-
-
+include("utils/utils.jl")
+include("bam/bam.jl")
 include("bam.jl")
 
 
