@@ -24,6 +24,12 @@ type KString
     function KString(l,m,s)
         new(l,m,s)
     end
+    function KString(str::ASCIIString)
+        s = convert(Ptr{Cchar}, pointer(str.data))
+        l = length(str)
+        m = l
+        KString(l,m,s)
+    end
 end
 function strptr(pkstr::Ptr{KString})
     kstr = unsafe_load(pkstr)
@@ -61,7 +67,6 @@ const seq_nt16_table = UInt8[
 ]
 
 function bam_hdr_init()
-    #return bam_hdr_t *
     ccall((:bam_hdr_init,"libhts"),Ptr{Void},())
 end
 @doc """ input: BGZF *fp

@@ -24,13 +24,20 @@ function bam_open(fname::AbstractString, mode::AbstractString)
     split(fname,".")[end] == "bam" || info("file name doesn't endwith bam")
     
     bam_fl = hts_open(fname,mode)
-    hdr_handle = sam_hdr_read(bam_fl) #header info
+    if mode == "r"
+        hdr_handle = sam_hdr_read(bam_fl) #header info
+    else
+        hdr_handle = bam_hdr_init()
+    end
     prec = bam_init1()
     kstr = KString(0,0,C_NULL)
     pkstr = convert(Ptr{KString}, pointer_from_objref(kstr))
     
     BamIOStream(fname,bam_fl,hdr_handle,prec,pkstr)
 end
+
+
+
 
 @doc """ read a record from a bam iostream
 """ ->
@@ -83,11 +90,25 @@ function readlines(bios::BamIOStream)
     data[1:i]
 end
 
-@doc """
+@doc """ write a record to a BamIOStream
 """ ->
-function write()
-    
-    
+function writeline(bios::BamIOStream, str::ASCIIString)
+    error("Wait for hdr function finished")
+    kstr = KString(str)
+    pkstr = convert(Ptr{KString}, pointer_from_objref(kstr))
+    handle = bios.handle
+    hdr_handle = bios.hdr_handle
+    prec = bios.precord
+    sam_parse1(pkstr,hdr_handle,prec)
+    sam_write1(handle,hdr_handle,prec)
+end
+
+@doc """ write all the records in strs to a BamIOStream
+""" ->
+function writelines(bios::BamIOStream, strs::Array{ASCIIString,1})
+    for str in strs
+        writeline(bios, str)
+    end
 end
 
 @doc """ close a BamIOStream
