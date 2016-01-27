@@ -1,5 +1,5 @@
 
-strptr(p::Ptr{UInt8},st::Int64,ed::Int64) = stringfrompointer(p,st,ed)
+strptr(p::Ptr{UInt8},st::Integer,ed::Integer) = stringfrompointer(p,Int64(st),Int64(ed))
 function stringfrompointer(p::Ptr{UInt8},st::Int64,ed::Int64)
     len = ed-st+1
     @assert len>0

@@ -17,6 +17,27 @@ immutable Record
     id::UInt64   # BAM_ID ???
 end
 
+type KString
+    l::Csize_t
+    m::Csize_t
+    s::Ptr{Cchar}
+    function KString(l,m,s)
+        new(l,m,s)
+    end
+end
+function strptr(pkstr::Ptr{KString})
+    kstr = unsafe_load(pkstr)
+    p = convert(Ptr{UInt8},kstr.s)
+    strptr(p,1,kstr.l)
+end
+function show(io::IO,ks::KString)
+    data = Array{UInt8,1}(ks.l)
+    for i = 1:ks.l
+        data[i] = unsafe_load(ks.s,i)
+    end
+    print(io,ASCIIString(data))
+end
+
 const cigarstring = "MIDNSHPX="
 const seq_nt16_str = "=ACMGRSVTWYHKDBN"
 const seq_nt16_table = UInt8[
@@ -193,7 +214,7 @@ end
 */
 hts_idx_t *sam_index_load(htsFile *fp, const char *fn);
 """ ->
-function sam_index_load(htsFile *fp, const char *fn)
+function sam_index_load(fp, fn::Ptr{Cchar})
     ccall((:sam_index_load,"libhts"),Ptr{Void},(Ptr{Void},Ptr{Cchar}),fp,fn)
 end
 
@@ -284,7 +305,8 @@ end
     int hts_close(htsFile *fp)    
 """ ->
 function sam_close(fp)
-    ccall((:hts_close,"libhts"),Cint,(Ptr{Void},),fp)
+    ret = ccall((:hts_close,"libhts"),Cint,(Ptr{Void},),fp)
+    @assert ret == 0 || info("non-zeros status in the sam_close")
 end
 @doc """
     int sam_open_mode(char *mode, const char *fn, const char *format);
@@ -390,11 +412,12 @@ function bam_aux_append(b::Ptr{Record}, tag::Ptr{Cchar}, tp::Cchar, len::Cint, d
     warn("Not sure how to deal with char tag[2]")
     ccall((:bam_aux_append,"libhts"),Void,(Ptr{Record},Ptr{Char},Cchar,Cint,UInt8), b, tag, tp, len, data)
 end
+
 @doc """
     int bam_aux_del(bam1_t *b, uint8_t *s);
 """ ->
 function bam_aux_del(b::Ptr{Record}, s::Ptr{UInt8})
-    ccall((:bam_aux_del,"libhts"),Cint,(Ptr{Record},Ptr{UInt8}),b, s);))
+    ccall((:bam_aux_del,"libhts"),Cint,(Ptr{Record},Ptr{UInt8}),b, s)
 end
 
 function bam_get_cigar(rec::Record)
@@ -489,25 +512,6 @@ function sam_read!(bam_hdl::Ptr{Void},bam_hdr_hdl::Ptr{Void},b::Ptr{Record})
     ccall((:sam_read1,"libhts"),Cint,(Ptr{Void},Ptr{Void},Ptr{Record}),bam_hdl,bam_hdr_hdl,b)
 end
 
-type KString
-    l::Csize_t
-    m::Csize_t
-    s::Ptr{Cchar}
-    function KString(l,m,s)
-        new(l,m,s)
-    end
-end
-function strptr(pkstr::Ptr{KString})
-    p = convert(Ptr{UInt8},pkstr.s)
-    strptr(p,1,pkstr.l)
-end
-function show(io::IO,ks::KString)
-    data = Array{UInt8,1}(ks.l)
-    for i = 1:ks.l
-        data[i] = unsafe_load(ks.s,i)
-    end
-    print(io,ASCIIString(data))
-end
 function sam_format!(h::Ptr{Void},b::Ptr{Record},pstr::Ptr{KString})
     ccall((:sam_format1,"libhts"),Cint,(Ptr{Void},Ptr{Record},Ptr{KString}),h,b,pstr)
 end

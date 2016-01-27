@@ -1,2 +1,2 @@
 
-readlines("data/test.bam")
+HTSLIB.readlines("data/100.bam")
