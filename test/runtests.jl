@@ -5,4 +5,5 @@ end
 using HTSLIB
 using Base.Test
 
-include("bam.jl")
+#include("bam.jl")
+include("user/bam.jl")

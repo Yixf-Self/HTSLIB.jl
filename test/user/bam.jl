@@ -1,0 +1,2 @@
+
+readlines("data/test.bam")

@@ -46,7 +46,7 @@ end
 @doc """ input: BGZF *fp
          output: bam_hdr_t*
 """ ->
-function bam_hdr_read(bam_hdl::Ptr{Void})
+function sam_hdr_read(bam_hdl::Ptr{Void})
     ccall((:sam_hdr_read,"libhts"),Ptr{Void},(Ptr{Void},),bam_hdl)
 end
 @doc """ input:  BGZF *fp
@@ -73,7 +73,7 @@ function bam_hdr_dup(h0)
 end
 @doc """ bam1_t* bam_init1(void)
 """ ->
-function bam_init()
+function bam_init1()
     ccall((:bam_init1,"libhts"),Ptr{Record},())
 end
 @doc """ void bam_destroy1(bam1_t *b)
@@ -481,7 +481,7 @@ function show(io::IO, rec::Record)
     aux = bam_get_aux(rec)
     print(io,aux,"\n")
 end
-function bam_open{T<:AbstractString}(fn::T,mode::T)
+function hts_open{T<:AbstractString}(fn::T,mode::T)
     ccall((:hts_open,"libhts"),Ptr{Void},(Cstring,Cstring),fn,mode)
 end
 
@@ -496,6 +496,10 @@ type KString
     function KString(l,m,s)
         new(l,m,s)
     end
+end
+function strptr(pkstr::Ptr{KString})
+    p = convert(Ptr{UInt8},pkstr.s)
+    strptr(p,1,pkstr.l)
 end
 function show(io::IO,ks::KString)
     data = Array{UInt8,1}(ks.l)

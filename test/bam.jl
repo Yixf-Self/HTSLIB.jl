@@ -4,7 +4,7 @@ fp = HTSLIB.bam_open(bam_fl,"r")
 
 bamheader = HTSLIB.bam_hdr_read(fp)
 
-record = HTSLIB.bam_init()
+record = HTSLIB.bam_init1()
 ks = HTSLIB.KString(0,0,C_NULL)
 while true
     r = HTSLIB.bam_read!(fp,bamheader,record)
