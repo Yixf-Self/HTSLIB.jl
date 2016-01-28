@@ -13,6 +13,6 @@ export sam_open,
 include("utils/utils.jl")
 include("bam/bam.jl")
 include("user/bam.jl")
-
+include("user/sam.jl")
 
 end
