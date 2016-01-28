@@ -8,7 +8,7 @@ function sam_open(fname::AbstractString, mode::AbstractString)
     
     sam_fl = hts_open(fname,mode)
     if mode == "r"
-        phdr = sam_hdr_read(bam_fl) #header info
+        phdr = sam_hdr_read(sam_fl) #header info
     else
         info("Not sure in sam_open")
         phdr = sam_hdr_init()
@@ -20,15 +20,9 @@ function sam_open(fname::AbstractString, mode::AbstractString)
     SamIOStream(fname,sam_fl,phdr,prec,pkstr)
 end
 
-function sam_hdr_read(sios::SamIOStream)
-    sam_hdr_read(sios.handle)
-end
-
-function sam_hdr_parse(sios::SamIOStream)
-    header = unsafe_load(sios.phdr)
-    l_text = header.l_text
-    text = header.text
-    warn("sam_hdr_parse not sure its usage")
+function sam_hdr_parse(str::AbstractString)
+    l_text = Int32(length(str))
+    text = pointer(str.data)
     sam_hdr_parse(l_text,text)
 end
 

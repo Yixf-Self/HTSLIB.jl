@@ -31,6 +31,35 @@ type KString
         KString(l,m,s)
     end
 end
+
+#typealias Header Void
+#=
+ @abstract Structure for the alignment header.
+ @field n_targets   number of reference sequences
+ @field l_text      length of the plain text in the header
+ @field target_len  lengths of the reference sequences
+ @field target_name names of the reference sequences
+ @field text        plain text
+ @field sdict       header dictionary
+=#
+type Header
+    n_targets::Int32  
+    ignore_sam_err::Int32
+    l_text::UInt32
+    target_len::Ptr{UInt32}
+    cigar_tab::Ptr{Int8}
+    target_name::Ptr{Ptr{Cchar}}
+    text::Ptr{Cchar}
+    sdict::Ptr{Void}
+end
+
+function strptr(phdr::Ptr{Header})
+    hdr = unsafe_load(phdr)
+    text = convert(Ptr{UInt8}, hdr.text)
+    l_text = hdr.l_text
+    strptr(text,1,hdr.l_text)
+end
+
 function strptr(pkstr::Ptr{KString})
     kstr = unsafe_load(pkstr)
     p = convert(Ptr{UInt8},kstr.s)
@@ -67,25 +96,25 @@ const seq_nt16_table = UInt8[
 ]
 
 function bam_hdr_init()
-    ccall((:bam_hdr_init,"libhts"),Ptr{Void},())
+    ccall((:bam_hdr_init,"libhts"),Ptr{Header},())
 end
 @doc """ input: BGZF *fp
          output: bam_hdr_t*
 """ ->
-function sam_hdr_read(bam_hdl::Ptr{Void})
-    ccall((:sam_hdr_read,"libhts"),Ptr{Void},(Ptr{Void},),bam_hdl)
+function bam_hdr_read(bam_hdl::Ptr{Void})
+    ccall((:bam_hdr_read,"libhts"),Ptr{Header},(Ptr{Void},),bam_hdl)
 end
 @doc """ input:  BGZF *fp
                  const bam_hdr_t *h
          output: int
 """ ->
-function bam_hdr_write(fp,h)
-    ccall((:bam_hdr_write,"libhts"),Cint,(Ptr{Void},Ptr{Void}),fp,h)
+function bam_hdr_write(fp,h::Ptr{Header})
+    ccall((:bam_hdr_write,"libhts"),Cint,(Ptr{Void},Ptr{Header}),fp,h)
 end
 @doc """ void bam_hdr_destroy(bam_hdr_t *h)
 """ ->
 function bam_hdr_destroy(h)
-    ccall((:bam_hdr_destroy,"libhts"),Void,(Ptr{Void},),h)
+    ccall((:bam_hdr_destroy,"libhts"),Void,(Ptr{Header},),h)
 end
 @doc """ int bam_name2id(bam_hdr_t *h,const char*ref)
 """ ->
@@ -95,7 +124,7 @@ end
 @doc """ bam_hdr_t* bam_hdr_dup(const bam_hdr_t *h0)
 """ ->
 function bam_hdr_dup(h0)
-    ccall((:bam_hdr_dup,"libhts"),Ptr{Void},(Ptr{Void},),h0)
+    ccall((:bam_hdr_dup,"libhts"),Ptr{Header},(Ptr{Header},),h0)
 end
 @doc """ bam1_t* bam_init1(void)
 """ ->
@@ -109,13 +138,13 @@ function bam_destroy1(b::Ptr{Record})
 end
 @doc """ int bam_read1(BGZF *fp, bam1_t *b)
 """ ->
-function bam_read(fp,b)
+function bam_read!(fp,b)
     ccall((:bam_read1,"libhts"),Cint,(Ptr{Void},Ptr{Record}),fp,b)
 end
 @doc """ int bam_write1(BGZF *fp, const bam1_t *b)
 """ ->
-function bam_write(fp,b)
-    ccall((:bam_write,"libhts"),Cint,(Ptr{Void},Ptr{Record},fp,b))
+function bam_write1(fp,b)
+    ccall((:bam_write1,"libhts"),Cint,(Ptr{Void},Ptr{Record}),fp,b)
 end
 @doc """ bam1_t *bam_copy1(bam1_t *bdst, const bam1_t *bsrc)
 """ ->
@@ -295,9 +324,7 @@ end
     #define sam_open(fn, mode) (hts_open((fn), (mode)))
     htsFile *hts_open(const char *fn, const char *mode)        
 """ ->
-function sam_open(fn::Ptr{Cchar}, mode::Ptr{Cchar})
-    ccall((:hts_open,"libhts"),Ptr{Void},(Ptr{Cchar},Ptr{Cchar}),fn, mode)
-end
+sam_open(fn::AbstractString,mode::AbstractString) = hts_open(fn,mode)
 @doc """
     #define sam_open_format(fn, mode, fmt) (hts_open_format((fn), (mode), (fmt)))
     htsFile *hts_open_format(const char *fn, const char *mode, const htsFormat *fmt);        
@@ -331,30 +358,33 @@ function sam_open_mode_opts(fn::Ptr{Cchar},mode::Ptr{Cchar},format::Ptr{Cchar})
     ccall((:sam_open_mode_opts,"libhts"),Ptr{Cchar},(Ptr{Cchar},Ptr{Cchar},Ptr{Cchar}),fn,mode,format)
 end
 
-#    typedef htsFile samFile;
 @doc """
     bam_hdr_t *sam_hdr_parse(int l_text, const char *text);
+    translate a string to a bam_hdr_t type    
 """ ->
 function sam_hdr_parse(l_text::Cint, text::Ptr{Cchar})
-    ccall((:sam_hdr_parse,"libhts"),Ptr{Void},(Cint,Ptr{Cchar}),l_text,text)
+    phdr = ccall((:sam_hdr_parse,"libhts"),Ptr{Void},(Cint,Ptr{Cchar}),l_text,text)
+    convert(Ptr{Header},phdr)
 end
+
 @doc """
     bam_hdr_t *sam_hdr_read(samFile *fp);
 """ ->
 function sam_hdr_read(fp::Ptr{Void})
-    ccall((:sam_hdr_read,"libhts"),Ptr{Void},(Ptr{Void},),fp)
+    ccall((:sam_hdr_read,"libhts"),Ptr{Header},(Ptr{Void},),fp)
 end
+
 @doc """
     int sam_hdr_write(samFile *fp, const bam_hdr_t *h);
 """ ->
-function sam_hdr_write(fp::Ptr{Void}, h::Ptr{Void})
-    ccall((:sam_hdr_write,"libhts"),Cint,(Ptr{Void},Ptr{Void}), fp,h)
+function sam_hdr_write(fp::Ptr{Void}, h::Ptr{Header})
+    ccall((:sam_hdr_write,"libhts"),Cint,(Ptr{Void},Ptr{Header}), fp,h)
 end
 @doc """
     int sam_parse1(kstring_t *s, bam_hdr_t *h, bam1_t *b);
 """ ->
-function sam_parse1(s::Ptr{KString}, h::Ptr{Void}, b::Ptr{Record})
-    ccall((:sam_parse1,"libhts"),Cint,(Ptr{KString},Ptr{Void},Ptr{Record}), s, h, b)
+function sam_parse1(s::Ptr{KString}, h::Ptr{Header}, b::Ptr{Record})
+    ccall((:sam_parse1,"libhts"),Cint,(Ptr{KString},Ptr{Header},Ptr{Record}), s, h, b)
 end
 @doc """
         int sam_format1(const bam_hdr_t *h, const bam1_t *b, kstring_t *str);
@@ -365,14 +395,14 @@ end
 @doc """
     int sam_read1(samFile *fp, bam_hdr_t *h, bam1_t *b);
 """ ->
-function sam_read1(fp, h, b::Ptr{Record})
-    ccall((:sam_read1,"libhts"),Cint,(Ptr{Void},Ptr{Void},Ptr{Record}), fp, h,b)
+function sam_read1(fp, h::Ptr{Header}, b::Ptr{Record})
+    ccall((:sam_read1,"libhts"),Cint,(Ptr{Void},Ptr{Header},Ptr{Record}), fp, h,b)
 end
 @doc """
     int sam_write1(samFile *fp, const bam_hdr_t *h, const bam1_t *b);
 """ ->
-function sam_write1(fp, h, b::Ptr{Record})
-    ccall((:sam_write1,"libhts"),Cint,(Ptr{Void},Ptr{Void},Ptr{Record}),fp, h, b)
+function sam_write1(fp, h::Ptr{Header}, b::Ptr{Record})
+    ccall((:sam_write1,"libhts"),Cint,(Ptr{Void},Ptr{Header},Ptr{Record}),fp, h, b)
 end
 
 #=
@@ -510,24 +540,19 @@ function show(io::IO, rec::Record)
     print(io,aux,"\n")
 end
 function hts_open{T<:AbstractString}(fn::T,mode::T)
-    ccall((:hts_open,"libhts"),Ptr{Void},(Cstring,Cstring),fn,mode)
+    fn = pointer(fn.data)
+    mode = pointer(mode.data)
+    ccall((:hts_open,"libhts"),Ptr{Void},(Ptr{Cchar},Ptr{Cchar}),fn,mode)
 end
 
-function sam_read!(bam_hdl::Ptr{Void},bam_hdr_hdl::Ptr{Void},b::Ptr{Record})
-    ccall((:sam_read1,"libhts"),Cint,(Ptr{Void},Ptr{Void},Ptr{Record}),bam_hdl,bam_hdr_hdl,b)
+function sam_read!(bam_hdl::Ptr{Void},bam_hdr_hdl::Ptr{Header},b::Ptr{Record})
+    ccall((:sam_read1,"libhts"),Cint,(Ptr{Void},Ptr{Header},Ptr{Record}),bam_hdl,bam_hdr_hdl,b)
 end
 
-function sam_format!(h::Ptr{Void},b::Ptr{Record},pstr::Ptr{KString})
-    ccall((:sam_format1,"libhts"),Cint,(Ptr{Void},Ptr{Record},Ptr{KString}),h,b,pstr)
+function sam_format!(h::Ptr{Header},b::Ptr{Record},pstr::Ptr{KString})
+    ccall((:sam_format1,"libhts"),Cint,(Ptr{Header},Ptr{Record},Ptr{KString}),h,b,pstr)
 end
 function sam_parse!(pks,h,b)
     ccall((:sam_parse1,"libhts"),Cint,(Ptr{KString},Ptr{Void},Ptr{Record}),pks,h,b)
 end
-function bam_write(out,h,b)
-    error("Not implemented!")
-end
-function bam_close()
-end
 
-function bam_write()
-end
