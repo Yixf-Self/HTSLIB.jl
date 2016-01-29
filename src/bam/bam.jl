@@ -1,3 +1,29 @@
+#=
+typedef struct {
+    uint32_t is_bin:1, is_write:1, is_be:1, is_cram:1, dummy:28;
+    int64_t lineno;
+    kstring_t line;
+    char *fn, *fn_aux;
+    union {
+        BGZF *bgzf;
+        struct cram_fd *cram;
+        struct hFILE *hfile;
+        void *voidp;
+    } fp;
+    htsFormat format;
+} htsFile;
+=#
+type HTSFormat #36
+    data1::Int64 #8
+    data2::Int64 #8
+    data3::Int64 #8
+    data4::Int32 #4
+    #compression::Cshort #2
+    specific::Ptr{Void} #8
+end
+
+
+
 immutable Record
     tid::Int32 # chromosome ID defined by bam_hdr_t
     pos::Int32 # 0-based leftmost coordinate
@@ -18,9 +44,9 @@ immutable Record
 end
 
 type KString
-    l::Csize_t
-    m::Csize_t
-    s::Ptr{Cchar}
+    l::Csize_t #8
+    m::Csize_t #8
+    s::Ptr{Cchar} #8
     function KString(l,m,s)
         new(l,m,s)
     end
@@ -30,6 +56,16 @@ type KString
         m = l
         KString(l,m,s)
     end
+end
+
+type HTSFile #96
+    bins::UInt32 # 4
+    lineno::Int64 # 8
+    line::KString # 24
+    fn::Ptr{Cchar} #8
+    fn_aux::Ptr{Cchar} #8
+    bgzf::Ptr{Void} #8
+    format::HTSFormat #36
 end
 
 #typealias Header Void
@@ -221,7 +257,7 @@ function bam_itr_next(bgzf, itr, r)
 end
 
 @doc """
-// Load/build .csi or .bai BAM index file.  Does not work with CRAM.
+// build .csi or .bai BAM index file.  Does not work with CRAM.
 // It is recommended to use the sam_index_* functions below instead.
 #define bam_index_load(fn) hts_idx_load((fn), HTS_FMT_BAI)
 hts_idx_t *hts_idx_load(const char *fn, int fmt);
@@ -231,7 +267,7 @@ function bam_index_load(fn)
 end
 
 @doc """
-// Load/build .csi or .bai BAM index file.  Does not work with CRAM.
+// build .csi or .bai BAM index file.  Does not work with CRAM.
 // It is recommended to use the sam_index_* functions below instead.
 #define bam_index_build(fn, min_shift) (sam_index_build((fn), (min_shift)))
 int sam_index_build(const char *fn, int min_shift)
@@ -304,15 +340,15 @@ end
 @doc """
     hts_itr_t *sam_itr_querys(const hts_idx_t *idx, bam_hdr_t *hdr, const char *region);
 """ ->
-function sam_itr_querys(idx, hdr, region::Ptr{Cchar})
-    ccall((:sam_itr_querys,"libhts"),Ptr{Void},(Ptr{Void},Ptr{Void},Ptr{Cchar}),idx, hdr, region)
+function sam_itr_querys(idx, hdr::Ptr{Header}, region::Ptr{Cchar})
+    ccall((:sam_itr_querys,"libhts"),Ptr{Void},(Ptr{Void},Ptr{Header},Ptr{Cchar}),idx, hdr, region)
 end
 @doc """
     #define sam_itr_next(htsfp, itr, r) hts_itr_next((htsfp)->fp.bgzf, (itr), (r), (htsfp))
     int hts_itr_next(BGZF *fp, hts_itr_t *iter, void *r, void *data)
 """ ->
-function sam_itr_next(bgzf, itr, r)
-    ccall((:hts_itr_next,"libhts"),Cint,(Ptr{Void},Ptr{Void},Ptr{Void},Ptr{Void}),bgzf,itr,r,htsfp)
+function sam_itr_next(bgzf, itr, r,handle)
+    ccall((:hts_itr_next,"libhts"),Cint,(Ptr{Void},Ptr{Void},Ptr{Record},Ptr{Void}),bgzf,itr,r,handle)
 end
 
 #=
