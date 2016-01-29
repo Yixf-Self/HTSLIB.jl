@@ -10,8 +10,8 @@ function sam_open(fname::AbstractString, mode::AbstractString)
     if mode == "r"
         phdr = sam_hdr_read(sam_fl) #header info
     else
-        info("Not sure in sam_open")
-        phdr = sam_hdr_init()
+#        info("Not sure in sam_open")
+        phdr = bam_hdr_init()
     end
     prec = bam_init1()
     kstr = KString(0,0,C_NULL)
@@ -22,7 +22,9 @@ end
 
 function sam_hdr_parse(str::AbstractString)
     l_text = Int32(length(str))
-    text = pointer(str.data)
+    str = string(str,'\0')
+    text = convert(Cstring, pointer(str))
+    @show l_text,bytestring(text)
     sam_hdr_parse(l_text,text)
 end
 
@@ -34,10 +36,9 @@ function readline(sios::SamIOStream)
     prec = sios.precord
     ret = sam_read!(handle,phdr,prec)
     if ret == 0
-        sios.eof = true
+        sios.eof = false
     elseif ret == -1
         sios.eof = true
-        #info("error occured in sam read ")
     end
     pkstr = sios.pkstr
     sam_format!(phdr,prec,pkstr)
@@ -45,7 +46,7 @@ function readline(sios::SamIOStream)
     strptr(pkstr)
 end
 
-@doc """ eof(bios) -> Bool
+@doc """ eof(sios) -> Bool
          Tests whether an Bam I/O stream is at end-of-file.
 """ ->
 function eof(sios::SamIOStream)
@@ -55,6 +56,7 @@ end
 @doc """ read all the records from a bam file
 """ ->
 function readlines(fname::AbstractString)
+    info("In the sam open")
     sios = sam_open(fname,"r")
     data = readlines(sios)
     close(sios)
@@ -67,13 +69,13 @@ function readlines(sios::SamIOStream)
     size = 256
     data = Array{ASCIIString,1}(size)
     i = 0
-    while !eof(bios)
+    while !eof(sios)
         i += 1
         if i > size
             resize!(data,2*size)
             size = 2*size
         end
-        line = readline(bios)
+        line = readline(sios)
         data[i] = line
     end
     data[1:i]
@@ -81,7 +83,7 @@ end
 
 @doc """ write a record to a SamIOStream
 """ ->
-function writeline(bios::SamIOStream, str::ASCIIString)
+function writeline(sios::SamIOStream, str::ASCIIString)
 #    error("Wait for hdr function finished")
     kstr = KString(str)
     pkstr = convert(Ptr{KString}, pointer_from_objref(kstr))
@@ -104,8 +106,7 @@ end
 @doc """ close a SamIOStream
 """ ->
 function close(sios::SamIOStream)
-    #may be header need close but not find function now
     bam_destroy1(sios.precord)
-    bam_hdr_destroy(sios.phdr)
+#    bam_hdr_destroy(sios.phdr) # not yet to find why freed already
     sam_close(sios.handle)
 end

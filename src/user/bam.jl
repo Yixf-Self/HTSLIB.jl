@@ -52,8 +52,8 @@ function readline(bios::BamIOStream)
     if ret == 0
         bios.eof = true
     elseif ret == -1
-        bios.eof = true
-        #info("error occured in sam read ")
+        bios.eof = false
+        info("error occured in sam read ")
     end
     pkstr = bios.pkstr
     sam_format!(phdr,prec,pkstr)
@@ -112,7 +112,7 @@ end
 """ ->
 function writelines(bios::BamIOStream, strs::Array{ASCIIString,1})
     #sam_hdr_write will use bam_hdr_write
-    sam_hdr_write(bios.handle,bios.phdr)
+    #sam_hdr_write(bios.handle,bios.phdr)
     for str in strs
         writeline(bios, str)
     end

@@ -362,9 +362,8 @@ end
     bam_hdr_t *sam_hdr_parse(int l_text, const char *text);
     translate a string to a bam_hdr_t type    
 """ ->
-function sam_hdr_parse(l_text::Cint, text::Ptr{Cchar})
-    phdr = ccall((:sam_hdr_parse,"libhts"),Ptr{Void},(Cint,Ptr{Cchar}),l_text,text)
-    convert(Ptr{Header},phdr)
+function sam_hdr_parse(l_text::Cint, text::Cstring)
+    phdr = ccall((:sam_hdr_parse,"libhts"),Ptr{Header},(Cint,Cstring),l_text,text)
 end
 
 @doc """
@@ -378,7 +377,7 @@ end
     int sam_hdr_write(samFile *fp, const bam_hdr_t *h);
 """ ->
 function sam_hdr_write(fp::Ptr{Void}, h::Ptr{Header})
-    ccall((:sam_hdr_write,"libhts"),Cint,(Ptr{Void},Ptr{Header}), fp,h)
+    ccall((:sam_hdr_write,"libhts"),Cint,(Ptr{Void},Ptr{Header}),fp,h)
 end
 @doc """
     int sam_parse1(kstring_t *s, bam_hdr_t *h, bam1_t *b);
@@ -389,8 +388,8 @@ end
 @doc """
         int sam_format1(const bam_hdr_t *h, const bam1_t *b, kstring_t *str);
 """ ->
-function sam_format1(h::Ptr{Void}, b::Ptr{Record}, str::Ptr{KString})
-    ccall((:sam_format1,"libhts"),Cint,(Ptr{Void},Ptr{Record},Ptr{KString}), h, b, str)
+function sam_format1(h::Ptr{Header}, b::Ptr{Record}, str::Ptr{KString})
+    ccall((:sam_format1,"libhts"),Cint,(Ptr{Header},Ptr{Record},Ptr{KString}), h, b, str)
 end
 @doc """
     int sam_read1(samFile *fp, bam_hdr_t *h, bam1_t *b);
