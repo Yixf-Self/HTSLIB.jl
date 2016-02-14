@@ -24,7 +24,7 @@ end
 function bam_open(fname::AbstractString, mode::AbstractString)
     split(fname,".")[end] == "bam" || info("file name doesn't endwith bam")
     
-    bam_fl = hts_open(fname,mode)
+    bam_fl = hts_open(fname, mode)
     if mode == "rb"
         # bam_hdr_read(bam_fl->fp.bgzf)
         phdr = sam_hdr_read(bam_fl) #header info

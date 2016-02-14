@@ -13,16 +13,33 @@ typedef struct {
     htsFormat format;
 } htsFile;
 =#
-type HTSFormat #36
+#=
+type HTSFormat #32
     data1::Int64 #8
     data2::Int64 #8
-    data3::Int64 #8
+    data3::Int32 #4
     data4::Int32 #4
     #compression::Cshort #2
     specific::Ptr{Void} #8
 end
+=#
 
+@enum htsFormatCategory unknown_category sequence_data variant_data index_file region_list category_maximum=32767
+@enum htsExactFormat unknown_format binary_format text_format sam bam bai cram crai vcf bcf csi gzi tbi bed format_maximum=32767
+@enum htsCompression no_compression gzip bgzf custom compression_maximum=32767
 
+type Version
+    major::Cshort
+    minor::Cshort
+end
+
+type HTSFormat
+    category::htsFormatCategory
+    format::htsExactFormat
+    version::Version
+    compression_level::Cshort
+    specific::Ptr{Void}
+end
 
 immutable Record
     tid::Int32 # chromosome ID defined by bam_hdr_t
@@ -58,14 +75,110 @@ type KString
     end
 end
 
-type HTSFile #96
-    bins::UInt32 # 4
-    lineno::Int64 # 8
-    line::KString # 24
+type HFile
+    buffer::Ptr{Cchar}
+    beg::Ptr{Cchar}
+    ed::Ptr{Cchar}
+    limit::Ptr{Cchar}
+    backend::Ptr{Void}
+    offset::Ptr{Int64}
+    has_errno::Cint
+end
+
+bitstype 32 ERR32
+
+type BGZF
+    err::ERR32
+    cache_size::Cint
+    block_length::Cint
+    block_offset::Cint
+    block_address::Int64
+    uncompressed_address::Int64
+    uncompressed_block::Ptr{Void}
+    compressed_block::Ptr{Void}
+    cache::Ptr{Void}
+    fp::Ptr{HFile}
+    mt::Ptr{Void} #struct bgzf_mtaux_t
+    idx::Ptr{Void} # bgzidx_t
+    idx_build_otf::Cint
+    gz_stream::Ptr{Void}# z_stream *
+end
+
+type Cram_fd 
+    fp::Ptr{HFile}
+    mode::Cint
+    version::Cint
+    file_def::Ptr{Void}
+    header::Ptr{Void}
+
+    prefix::Ptr{Cchar}
+    record_counter::Clong
+    err::Cint
+    ctr::Ptr{Void}
+    first_base::Cint
+    last_base::Cint
+    
+    refs::Ptr{Void}              
+    ref::Ptr{Cchar}
+    ref_free::Ptr{Cchar}      
+    ref_id::Cint
+    ref_start::Cint
+    ref_end::Cint
+    ref_fn::Ptr{Cchar}
+    
+    level::Cint
+    #    cram_metrics *m[DS_END];
+    
+    decode_md::Cint
+    verbose::Cint
+    seqs_per_slice::Cint
+    slices_per_container::Cint
+    embed_ref::Cint
+    no_ref::Cint
+    ignore_md5::Cint
+    use_bz2::Cint
+    use_rans::Cint
+    use_lzma::Cint
+    shared_ref::Cint
+    required_fields::Cuint
+  #  cram_range range # todo
+    
+#        unsigned int bam_flag_swap[0x1000]; // cram -> bam flags
+ #       unsigned int cram_flag_swap[0x1000];// bam -> cram flags
+  #      unsigned char L1[256];              // ACGT{*} ->0123{4}
+   #     unsigned char L2[256];              // ACGTN{*}->01234{5}
+    #    char cram_sub_matrix[32][32];       // base substituion codes
+
+    index_sz::Cint
+    index::Ptr{Void}#                  // array, sizeof index_sz
+    first_container::Clong
+    eof::Cint
+    last_slice::Cint#                     // number of recs encoded in last slice
+    multi_seq::Cint
+    unsorted::Cint
+    empty_container::Cint#                // Marker for EOF block
+
+    own_pool::Cint
+    pool::Ptr{Void}
+    rqueue::Ptr{Void}
+    #            pthread_mutex_t metrics_lock
+    #           pthread_mutex_t ref_lock
+    bl::Ptr{Void}
+    #          pthread_mutex_t bam_list_lock
+    job_pending::Ptr{Void}
+    ooc::Cint                       #     // out of containers.  
+end
+
+bitstype 32 BINS
+
+type HTSFile
+    bins::UInt32 #4 # ???
+    lineno::Int64 #8
+    line::KString #24
     fn::Ptr{Cchar} #8
     fn_aux::Ptr{Cchar} #8
-    bgzf::Ptr{Void} #8
-    format::HTSFormat #36
+    bgzf::Ptr{Void} #8 #???
+    format::HTSFormat #32 # ???
 end
 
 #typealias Header Void
@@ -78,6 +191,7 @@ end
  @field text        plain text
  @field sdict       header dictionary
 =#
+
 type Header
     n_targets::Int32  
     ignore_sam_err::Int32
@@ -240,7 +354,7 @@ end
          hts_itr_t *sam_itr_queryi(const hts_idx_t *idx, int tid, int beg, int end)
 """ ->
 function bam_itr_queryi(idx::Ptr{Void}, tid::Cint, beg::Cint, ed::Cint)
-    ccall((:sam_itr_queryi,"libhts"), (idx, tid, beg, ed))
+    ccall((:sam_itr_queryi,"libhts"), Ptr{Void},(Ptr{Void},Ptr{Cint},Ptr{Cint},Ptr{Cint}),(idx, tid, beg, ed))
 end
 @doc """ #define bam_itr_querys(idx, hdr, region) sam_itr_querys(idx, hdr, region)
          hts_itr_t *sam_itr_querys(const hts_idx_t *idx, bam_hdr_t *hdr, const char *region)
@@ -577,7 +691,11 @@ end
 function hts_open{T<:AbstractString}(fn::T,mode::T)
     fn = pointer(fn.data)
     mode = pointer(mode.data)
-    ccall((:hts_open,"libhts"),Ptr{Void},(Ptr{Cchar},Ptr{Cchar}),fn,mode)
+    fp = ccall((:hts_open,"libhts"),Ptr{Void},(Ptr{Cchar},Ptr{Cchar}),fn,mode)
+    if fp == C_NULL
+        error("hts_open return C_NULL")
+    end
+    fp
 end
 
 function sam_read!(bam_hdl::Ptr{Void},bam_hdr_hdl::Ptr{Header},b::Ptr{Record})

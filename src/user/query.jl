@@ -29,9 +29,12 @@ end
 
 @doc """ produce record in the itr
 """ -> 
-function sam_itr_next!(handle::Ptr{Void},itr::Ptr{Void},r::Ptr{Record})
+function sam_itr_next!(handle::Ptr{Void}, itr::Ptr{Void}, r::Ptr{Record})
     phtsf = convert(Ptr{HTSFile}, handle)
     htsfile = unsafe_load(phtsf) # may change unsigned bits to signed
+    @show htsfile.lineno
+    @show htsfile.line
+    @show bytestring(htsfile.fn)
     bgzf = htsfile.bgzf
     flag = sam_itr_next(bgzf,itr,r,handle)
     flag >=0 ? true : false

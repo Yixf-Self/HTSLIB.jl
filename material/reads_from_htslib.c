@@ -22,7 +22,16 @@ int main(int argc, char** argv){
   bam_hdr_t *header = NULL;
 
   //  if (argc!=3) return -1;
-
+  printf("sizeof off_t is %d\n",(int)sizeof(off_t));
+  printf("sizeof htsFile is %d\n",(int)sizeof(htsFile));
+  printf("sizeof htsFormat is %d\n",(int)sizeof(htsFormat));
+  printf("sizeof union is %d\n",(int)sizeof(    union {
+    BGZF *bgzf;
+    struct cram_fd *cram;
+    struct hFILE *hfile;
+    void *voidp;
+  }));
+  printf("sizeof kstring_t is %d\n",(int)sizeof(kstring_t));
   const char* bam_fl = "test.bam";
   
   in = sam_open(bam_fl,"r");
