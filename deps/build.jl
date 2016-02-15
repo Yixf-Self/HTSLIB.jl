@@ -1,15 +1,42 @@
-libhts =  "libhts.so"
-if !in(libhts, readdir("/usr/local/lib"))
-    cmd = `git clone https://github.com/samtools/htslib.git`
-    dir = dirname(@__FILE__())
-    cd(dir) do
-        if !isdir("htslib")
-            success(cmd) || error("git clone htslib failed")
-        end
-        success(`autoconf`) || error("htslib autoconf failed")
-        success(`./configure`) || error("htslib configure failed")
-        success(`make`) || error("htslib make failed")
-        success(`sudo make install`) || error("sudo make install")
-        success(`sudo cp libhts.so /usr/local/lib`) || error("sudo cp libhts.so /usr/local/lib failed")
-    end
+using BinDeps
+
+libhts_detected = false
+function detecthts()
+    false
+end
+
+if !detechts()
+    
+    # install zlib
+
+    # build libhts
+    
+    hts = library_dependency("hts", aliases=["libhts"], runtime=true, os=:Unix)
+
+    _prefix = joinpath(BinDeps.depsdir(HTSLIB),"usr")
+    _srcdir = joinpath(BinDeps.depsdir(HTSLIB),"src")
+    _htsdir = joinpath(_srcdir,"htslib")
+    _libdir = joinpath(_prefix, "lib")
+
+    provides(BuildProcess,
+             (@build_steps begin
+                CreateDirectory(_srcdir)
+                CreateDirectory(_libdir)
+                @build_steps begin
+                  ChangeDirectory(_srcdir)
+                  `rm -rf htslib`
+                  `git clone https://github.com/samtools/htslib`
+                   FileRule(joinpath(_libdir, "libhts.so"), @build_steps begin
+                     ChangeDirectory(_htsdir)
+                     `autoconf`
+                     `./configure`
+                     `make`       
+                     `cp libhts.so $_libdir`
+                   end)
+                end
+             end), hts)
+    
+
+    @BinDeps.install Dict(:hts => :hts)
+
 end
