@@ -3,7 +3,5 @@
 *.jl.mem
 *.jl~
 *.*#
-*.bam
-*.sam
 *.#
 *.bai
