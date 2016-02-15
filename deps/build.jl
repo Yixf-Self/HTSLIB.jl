@@ -36,7 +36,7 @@ if !detechts()
                 end
              end), hts)
     
-
+    info("install begins")
     @BinDeps.install Dict(:hts => :hts)
 
 end
