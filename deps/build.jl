@@ -1,10 +1,10 @@
-using BinDeps
-
 libhts_detected = false
 function detecthts()
     false
 end
 
+using BinDeps
+@BinDeps.setup
 if !detecthts()
     
     # install zlib
