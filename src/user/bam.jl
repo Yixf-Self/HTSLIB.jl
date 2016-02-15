@@ -15,6 +15,7 @@ end
 @doc """ general file open function
 """ ->
 function open(fname::AbstractString,mode::AbstractString,ty::AbstractString)
+    fname = realpath(fname)
     ty == "bam" ? bam_open(fname,mode) :
     ty == "sam" ? sam_open(fname,mode) : open(fname,mode)
 end
@@ -23,7 +24,7 @@ end
 """ ->
 function bam_open(fname::AbstractString, mode::AbstractString)
     split(fname,".")[end] == "bam" || info("file name doesn't endwith bam")
-    
+    fname = realpath(fname)
     bam_fl = hts_open(fname, mode)
     if mode == "rb"
         # bam_hdr_read(bam_fl->fp.bgzf)
@@ -71,6 +72,7 @@ end
 @doc """ read all the records from a bam file
 """ ->
 function readlines(fname::AbstractString)
+    fname = realpath(fname)
     bios = bam_open(fname,"rb")
     data = readlines(bios)
     close(bios)

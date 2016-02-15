@@ -4,6 +4,7 @@ typealias SamIOStream BamIOStream
 @doc """ sam file name must endwith bam
 """ ->
 function sam_open(fname::AbstractString, mode::AbstractString)
+    fname = realpath(fname)
     split(fname,".")[end] == "sam" || info("file name doesn't endwith sam")
     
     sam_fl = hts_open(fname,mode)
