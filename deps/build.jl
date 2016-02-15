@@ -1,7 +1,7 @@
 libhts =  "libhts.so"
 if !in(libhts, readdir("/usr/local/lib"))
     cmd = `git clone https://github.com/samtools/htslib.git`
-    dir = dirname(@__FILE__)
+    dir = dirname(@__FILE__())
     cd(dir) do
         if !isdir("htslib")
             success(cmd) || error("git clone htslib failed")
