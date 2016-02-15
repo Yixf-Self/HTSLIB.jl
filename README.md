@@ -5,7 +5,8 @@ This package will be ready for users in a month. Welcome for everyone to give me
 Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/GeneMisc.jl.svg?branch=master)](https://travis-ci.org/OpenGene/HTSLIB.jl)
 
 ### TODO
-- query
+- replace Ptr{HTSFile} to Ptr{Void}
+- query 
 - tests
 - document
 
