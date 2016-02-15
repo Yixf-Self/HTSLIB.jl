@@ -54,15 +54,3 @@ Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/GeneMisc.jl.svg?bran
 	HTSLIB.close(fr)
 	
 ```
-
-
-### TODO
-- replace Ptr{HTSFile} to Ptr{Void}
-- query 
-- tests
-- document
-
-
-### Done
-- read
-- write
