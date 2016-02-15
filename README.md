@@ -5,6 +5,12 @@ This package will be ready for users in a month. Welcome for everyone to give me
 Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/GeneMisc.jl.svg?branch=master)](https://travis-ci.org/OpenGene/HTSLIB.jl)
 [![Documentation Status](http://readthedocs.org/projects/htslibjl/badge/?version=latest)](http://htslibjl.readthedocs.org/en/latest/?badge=latest)
 
+### Installation
+
+	Pkg.clone("https://github.com/OpenGene/HTSLIB.jl.git")
+	Pkg.build("HTSLIB")
+	Pkg.test("HTSLIB")
+
 ### Examples
 **read a bam file**
 ```Julia
