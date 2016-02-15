@@ -5,7 +5,7 @@ function detecthts()
     false
 end
 
-if !detechts()
+if !detecthts()
     
     # install zlib
 
