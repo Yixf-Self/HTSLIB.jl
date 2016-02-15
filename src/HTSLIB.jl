@@ -1,6 +1,7 @@
 module HTSLIB
+using Libdl
 
-
+const libhts = Libdl.find_library(["libhts.so"],[joinpath(Pkg.dir("HTSLIB"),"deps/usr/lib"])
 
 
 
