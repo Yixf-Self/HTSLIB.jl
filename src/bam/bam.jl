@@ -519,8 +519,8 @@ end
 @doc """
     bam_hdr_t *sam_hdr_read(samFile *fp);
 """ ->
-function sam_hdr_read(fp::Ptr{HTSFile})
-    ccall((:sam_hdr_read,"libhts"),Ptr{Header},(Ptr{HTSFile},),fp)
+function sam_hdr_read(fp::Ptr{Void})
+    ccall((:sam_hdr_read,"libhts"),Ptr{Header},(Ptr{Void},),fp)
 end
 
 @doc """
@@ -691,7 +691,7 @@ end
 function hts_open{T<:AbstractString}(fn::T,mode::T)
     fn = pointer(fn.data)
     mode = pointer(mode.data)
-    fp = ccall((:hts_open,"libhts"),Ptr{HTSFile},(Ptr{Cchar},Ptr{Cchar}),fn,mode)
+    fp = ccall((:hts_open,"libhts"),Ptr{Void},(Ptr{Cchar},Ptr{Cchar}),fn,mode)
     if fp == C_NULL
         error("hts_open return C_NULL")
     end
