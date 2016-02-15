@@ -3,7 +3,9 @@ if !in(libhts, readdir("/usr/local/lib"))
     cmd = `git clone https://github.com/samtools/htslib.git`
     dir = dirname(@__FILE__)
     cd(dir) do
-        success(cmd) || error("git clone htslib failed")
+        if !isdir("htslib")
+            success(cmd) || error("git clone htslib failed")
+        end
         success(`autoconf`) || error("htslib autoconf failed")
         success(`./configure`) || error("htslib configure failed")
         success(`make`) || error("htslib make failed")
