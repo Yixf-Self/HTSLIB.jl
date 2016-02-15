@@ -1,8 +1,11 @@
 sios = HTSLIB.open("/home/guo/haplox/Github/HTSLIB/test/data/100_sort.bam","rb","bam")
 
+@show sios.handle
+@show convert(Ptr{HTSLIB.HTSFile},sios.handle)
 htsfl = unsafe_load(convert(Ptr{HTSLIB.HTSFile},sios.handle))
 @show htsfl
 @show bytestring(htsfl.fn)
+
 #=
 pidx = HTSLIB.sam_index_load(sios,"/home/guo/haplox/Github/HTSLIB/test/data/100_sort.bam")
 phdr = sios.phdr

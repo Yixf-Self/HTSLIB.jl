@@ -33,7 +33,7 @@ type Version
     minor::Cshort
 end
 
-type HTSFormat
+immutable HTSFormat
     category::htsFormatCategory
     format::htsExactFormat
     version::Version
@@ -60,7 +60,7 @@ immutable Record
     id::UInt64   # BAM_ID ???
 end
 
-type KString
+immutable KString
     l::Csize_t #8
     m::Csize_t #8
     s::Ptr{Cchar} #8
@@ -171,7 +171,7 @@ end
 
 bitstype 32 BINS
 
-type HTSFile
+immutable HTSFile
     bins::UInt32 #4 # ???
     lineno::Int64 #8
     line::KString #24
@@ -519,8 +519,8 @@ end
 @doc """
     bam_hdr_t *sam_hdr_read(samFile *fp);
 """ ->
-function sam_hdr_read(fp::Ptr{Void})
-    ccall((:sam_hdr_read,"libhts"),Ptr{Header},(Ptr{Void},),fp)
+function sam_hdr_read(fp::Ptr{HTSFile})
+    ccall((:sam_hdr_read,"libhts"),Ptr{Header},(Ptr{HTSFile},),fp)
 end
 
 @doc """
@@ -691,7 +691,7 @@ end
 function hts_open{T<:AbstractString}(fn::T,mode::T)
     fn = pointer(fn.data)
     mode = pointer(mode.data)
-    fp = ccall((:hts_open,"libhts"),Ptr{Void},(Ptr{Cchar},Ptr{Cchar}),fn,mode)
+    fp = ccall((:hts_open,"libhts"),Ptr{HTSFile},(Ptr{Cchar},Ptr{Cchar}),fn,mode)
     if fp == C_NULL
         error("hts_open return C_NULL")
     end
