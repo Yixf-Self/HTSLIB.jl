@@ -13,8 +13,8 @@ if !detecthts()
     
     hts = library_dependency("hts", aliases=["libhts"], runtime=true, os=:Unix)
 
-    _prefix = joinpath(BinDeps.depsdir(HTSLIB),"usr")
-    _srcdir = joinpath(BinDeps.depsdir(HTSLIB),"src")
+    _prefix = joinpath(BinDeps.depsdir(hts),"usr")
+    _srcdir = joinpath(BinDeps.depsdir(hts),"src")
     _htsdir = joinpath(_srcdir,"htslib")
     _libdir = joinpath(_prefix, "lib")
 
