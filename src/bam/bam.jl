@@ -246,35 +246,35 @@ const seq_nt16_table = UInt8[
 ]
 
 function bam_hdr_init()
-    ccall((:bam_hdr_init,"libhts"),Ptr{Header},())
+    ccall((:bam_hdr_init,libhts),Ptr{Header},())
 end
 @doc """ input: BGZF *fp
          output: bam_hdr_t*
 """ ->
 function bam_hdr_read(bam_hdl::Ptr{Void})
-    ccall((:bam_hdr_read,"libhts"),Ptr{Header},(Ptr{Void},),bam_hdl)
+    ccall((:bam_hdr_read,libhts),Ptr{Header},(Ptr{Void},),bam_hdl)
 end
 @doc """ input:  BGZF *fp
                  const bam_hdr_t *h
          output: int
 """ ->
 function bam_hdr_write(fp,h::Ptr{Header})
-    ccall((:bam_hdr_write,"libhts"),Cint,(Ptr{Void},Ptr{Header}),fp,h)
+    ccall((:bam_hdr_write,libhts),Cint,(Ptr{Void},Ptr{Header}),fp,h)
 end
 @doc """ void bam_hdr_destroy(bam_hdr_t *h)
 """ ->
 function bam_hdr_destroy(h)
-    ccall((:bam_hdr_destroy,"libhts"),Void,(Ptr{Header},),h)
+    ccall((:bam_hdr_destroy,libhts),Void,(Ptr{Header},),h)
 end
 @doc """ int bam_name2id(bam_hdr_t *h,const char*ref)
 """ ->
 function bam_name2id(h::Ptr{Void},ref::Ptr{Cchar})
-    ccall((:bam_name2id,"libhts"),Cint,(Ptr{Void},Ptr{Cchar}),h,ref)
+    ccall((:bam_name2id,libhts),Cint,(Ptr{Void},Ptr{Cchar}),h,ref)
 end
 @doc """ bam_hdr_t* bam_hdr_dup(const bam_hdr_t *h0)
 """ ->
 function bam_hdr_dup(h0)
-    ccall((:bam_hdr_dup,"libhts"),Ptr{Header},(Ptr{Header},),h)
+    ccall((:bam_hdr_dup,libhts),Ptr{Header},(Ptr{Header},),h)
 end
 @doc """ bam1_t* bam_init1(void)
 """ ->
