@@ -23,11 +23,4 @@ For more detatails, see documentation below.
    user-guide/install
    user-guide/bam
    user-guide/sam
- 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
