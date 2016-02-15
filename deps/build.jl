@@ -11,7 +11,7 @@ if !detecthts()
 
     # build libhts
     
-    hts = library_dependency("hts", aliases=["libhts"], runtime=true, os=:Unix)
+    hts = library_dependency("hts", aliases=["libhts","libhts.so"])#, runtime=true, os=:Unix)
 
     _prefix = joinpath(BinDeps.depsdir(hts),"usr")
     _srcdir = joinpath(BinDeps.depsdir(hts),"src")
