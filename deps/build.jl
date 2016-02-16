@@ -8,18 +8,16 @@ using BinDeps
 if !detecthts()
     
     # install zlib
-
-    # build libhts
-    
-    hts = library_dependency("hts", aliases=["libhts","libhts.so"])#, runtime=true, os=:Unix)
     zlib = library_dependency("zlib", aliases = ["libzlib","zlib1"])
+    provides(Sources, Dict(URI("http://zlib.net/zlib-1.2.7.tar.gz") => zlib))
+    
+    # build libhts
+    hts = library_dependency("hts", aliases=["libhts","libhts.so"])#, runtime=true, os=:Unix)
     
     _prefix = joinpath(BinDeps.depsdir(hts),"usr")
     _srcdir = joinpath(BinDeps.depsdir(hts),"src")
     _htsdir = joinpath(_srcdir,"htslib")
     _libdir = joinpath(_prefix, "lib")
-
-    provides(Sources, Dict(URI("http://zlib.net/zlib-1.2.7.tar.gz") => zlib))
     
     provides(BuildProcess,
              (@build_steps begin
