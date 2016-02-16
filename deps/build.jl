@@ -1,17 +1,17 @@
-libhts_detected = false
+#libhts_detected = false
 function detecthts()
     false
 end
 
 using BinDeps
 @BinDeps.setup
-if !detecthts()
+if detecthts()
     
     # install zlib
-    zlib = library_dependency("zlib", aliases = ["libzlib","zlib1"])
-    provides(Sources, Dict(URI("http://zlib.net/zlib-1.2.7.tar.gz") => zlib))
+    #zlib = library_dependency("zlib", aliases = ["libzlib","zlib1","libzlib.so"])
+    #provides(Sources, Dict(URI("http://zlib.net/zlib-1.2.8.tar.gz") => zlib))
     
-    # build libhts
+    # Build libhts
     hts = library_dependency("hts", aliases=["libhts","libhts.so"])#, runtime=true, os=:Unix)
     
     _prefix = joinpath(BinDeps.depsdir(hts),"usr")
