@@ -18,6 +18,8 @@ if !detecthts()
     _htsdir = joinpath(_srcdir,"htslib")
     _libdir = joinpath(_prefix, "lib")
 
+    provides(Sources, Dict(URI("http://zlib.net/zlib-1.2.7.tar.gz") => zlib))
+    
     provides(BuildProcess,
              (@build_steps begin
                 CreateDirectory(_srcdir)
@@ -30,7 +32,7 @@ if !detecthts()
                      ChangeDirectory(_htsdir)
                      `autoconf`
                      `./configure`
-                     `make`       
+                     `make`
                      `cp libhts.so $_libdir`
                    end)
                 end
