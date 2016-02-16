@@ -12,7 +12,16 @@ if !detecthts()
     #provides(Sources, Dict(URI("http://zlib.net/zlib-1.2.8.tar.gz") => zlib))
     
     # Build libhts
-    hts = library_dependency("hts", aliases=["libhts","libhts.so"])#, runtime=true, os=:Unix)
+    hts = library_dependency("hts", aliases=["libhts","libhts.so","libhts.dylib"])#, runtime=true, os=:Unix)
+    autoconf = library_dependency("autoconf",os=:Darwin)
+    @osx_only begin
+        if Pkg.installed("Homebrew") === nothing
+            error("Homebrew package not installed, please run Pkg.add(\"Homebrew\")")
+        end
+        using Homebrew
+        provides( Homebrew.HB, "autoconfig", autoconf, os = :Darwin )
+        @BinDeps.install Dict(:autoconf => :autoconf)
+    end
     
     _prefix = joinpath(BinDeps.depsdir(hts),"usr")
     _srcdir = joinpath(BinDeps.depsdir(hts),"src")
@@ -32,7 +41,8 @@ if !detecthts()
                      `autoconf`
                      `./configure`
                      `make`
-                     `cp libhts.so $_libdir`
+                     @linux_only `cp libhts.so $_libdir`
+                     @osx_only `cp libhts.dylib $_libdir`
                    end)
                 end
              end), hts)
