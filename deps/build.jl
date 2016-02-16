@@ -5,7 +5,7 @@ end
 
 using BinDeps
 @BinDeps.setup
-if detecthts()
+if !detecthts()
     
     # install zlib
     #zlib = library_dependency("zlib", aliases = ["libzlib","zlib1","libzlib.so"])
