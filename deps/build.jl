@@ -2,7 +2,7 @@
 function detecthts()
     false
 end
-
+using Homebrew
 using BinDeps
 @BinDeps.setup
 if !detecthts()
@@ -18,7 +18,7 @@ if !detecthts()
         if Pkg.installed("Homebrew") === nothing
             error("Homebrew package not installed, please run Pkg.add(\"Homebrew\")")
         end
-        using Homebrew
+
         provides( Homebrew.HB, "autoconf", autoconf, os = :Darwin )
         #@BinDeps.install Dict(:autoconf => :autoconf)
     end
