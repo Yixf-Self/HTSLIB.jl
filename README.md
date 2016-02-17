@@ -1,4 +1,5 @@
 # HTSLIB
+HTSLIB.jl is a julia wrapper for [htslib](https://github.com/samtools/htslib).
 
 This package is under active development. Welcome for everyone to give me advices.
 
@@ -30,7 +31,7 @@ Linux: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch=mast
 	HTSLIB.close(fw)
 	HTSLIB.close(fr)
 ```
-**read a bam file**
+**read a sam file**
 
 ```Julia
 
