@@ -1,2 +1,0 @@
-testbamread :reads_from_htslib.c
-	gcc -Isamtools -Ihtslib -Lsamtools -Lhtslib reads_from_htslib.c /usr/local/lib/libhts.a /home/guo/haplox/Github/samtools/libbam.a -lz -lpthread -g
