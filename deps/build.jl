@@ -1,6 +1,7 @@
 #libhts_detected = false
 function detecthts()
-    false
+    @os_only info("You should compile libhts.dylab manually and set its location to HTSLIB.libhts")
+    @osx ? true : false
 end
 @osx_only using Homebrew
 using BinDeps
