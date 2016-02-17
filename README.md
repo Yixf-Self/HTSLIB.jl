@@ -14,7 +14,6 @@ Linux: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch=mast
 
 
 	for osx users:
-
 	Pkg.clone("https://github.com/OpenGene/HTSLIB.jl.git")
 	git clone https://github.com/samtools/htslib
 	cd htslib
