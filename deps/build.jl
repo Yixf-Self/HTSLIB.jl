@@ -2,7 +2,7 @@
 function detecthts()
     false
 end
-using Homebrew
+@osx_only using Homebrew
 using BinDeps
 @BinDeps.setup
 if !detecthts()
@@ -18,7 +18,6 @@ if !detecthts()
         if Pkg.installed("Homebrew") === nothing
             error("Homebrew package not installed, please run Pkg.add(\"Homebrew\")")
         end
-
         provides( Homebrew.HB, "autoconf", autoconf, os = :Darwin )
         #@BinDeps.install Dict(:autoconf => :autoconf)
     end
@@ -26,7 +25,7 @@ if !detecthts()
     hts = library_dependency("hts", aliases=["libhts","libhts.so","libhts.dylib","libhts.dll"])#, runtime=true, os=:Unix)
     _prefix = joinpath(BinDeps.depsdir(hts),"usr")
     _srcdir = joinpath(BinDeps.depsdir(hts),"src")
-    _htsdir = joinpath(_srcdir,"htslib")
+    _htsdir = joinpath(_srcdir,"htslib-1.3")
     _libdir = joinpath(_prefix, "lib")
     
     provides(BuildProcess,
@@ -36,7 +35,8 @@ if !detecthts()
                 @build_steps begin
                   ChangeDirectory(_srcdir)
                   `rm -rf htslib`
-                  `git clone https://github.com/samtools/htslib`
+                  `wget https://github.com/samtools/htslib/releases/download/1.3/htslib-1.3.tar.bz2`
+                  `tar xvf htslib-1.3.tar.bz2`
                    FileRule(joinpath(_libdir, "libhts.so"), @build_steps begin
                      ChangeDirectory(_htsdir)
                      `autoconf`
@@ -44,6 +44,7 @@ if !detecthts()
                      `make`
                      @linux_only `cp libhts.so $_libdir`
                      @osx_only `cp libhts.dylib $_libdir`
+                     @windows_only `cp libhts.dll $_libdir`
                    end)
                 end
              end), hts)
