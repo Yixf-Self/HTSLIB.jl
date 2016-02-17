@@ -12,16 +12,6 @@ Linux: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch=mast
 	Pkg.build("HTSLIB")
 	Pkg.test("HTSLIB")
 
-
-	for osx users:
-	Pkg.clone("https://github.com/OpenGene/HTSLIB.jl.git")
-	git clone https://github.com/samtools/htslib
-	cd htslib
-	autoconf
-	make
-	using HTSLIB
-	HTSLIB.libhts = /path/to/libhts.dylib
-
 ### Examples
 **read a bam file**
 ```Julia
