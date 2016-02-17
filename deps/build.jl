@@ -12,14 +12,14 @@ if !detecthts()
     #provides(Sources, Dict(URI("http://zlib.net/zlib-1.2.8.tar.gz") => zlib))
     
     # Build libhts
-    hts = library_dependency("hts", aliases=["libhts","libhts.so","libhts.dylib"])#, runtime=true, os=:Unix)
-    autoconf = library_dependency("autoconf",os=:Darwin)
+    hts = library_dependency("hts", aliases=["libhts","libhts.so","libhts.dylib","libhts.dll"])#, runtime=true, os=:Unix)
+    automake = library_dependency("autoconf", os=:Darwin)
     @osx_only begin
         if Pkg.installed("Homebrew") === nothing
             error("Homebrew package not installed, please run Pkg.add(\"Homebrew\")")
         end
         using Homebrew
-        provides( Homebrew.HB, "autoconfig", autoconf, os = :Darwin )
+        provides( Homebrew.HB, "autoconf", autoconf, os = :Darwin )
         @BinDeps.install Dict(:autoconf => :autoconf)
     end
     
