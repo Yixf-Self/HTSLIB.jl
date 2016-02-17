@@ -1,7 +1,7 @@
 module HTSLIB
 
-libhts = Libdl.find_library(["libhts.so"],[joinpath(dirname(dirname(@__FILE__)),"deps/usr/lib")])
-
+const libhts = Libdl.find_library(["libhts.so"],[joinpath(dirname(dirname(@__FILE__)),"deps/usr/lib")])
+#libhts = "libhts.so"
 
 include("bam/bam.jl")
 include("user/bam.jl")

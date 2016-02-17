@@ -1,7 +1,7 @@
 
 info("Test read bam file")
 data = HTSLIB.readlines("data/100.bam")
-@show data
+#@show data
 info("Read bam successfully")
 
 

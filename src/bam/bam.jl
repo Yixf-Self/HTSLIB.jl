@@ -691,13 +691,15 @@ function show(io::IO, rec::Record)
     print(io,aux,"\n")
 end
 function hts_open{T<:AbstractString}(fn::T,mode::T)
-    fn = pointer(fn.data)
-    mode = pointer(mode.data)
-    fp = ccall((:hts_open,libhts),Ptr{Void},(Ptr{Cchar},Ptr{Cchar}),fn,mode)
-    if fp == C_NULL
+    fp = pointer(fn.data)
+    mdp = pointer(mode.data)
+    @show fp,typeof(fp)
+    ret = ccall((:hts_open,libhts),Ptr{Void},(Ptr{Cchar},Ptr{Cchar}),fp,mdp)
+    @show "after hts_open"
+    if ret == C_NULL
         error("hts_open return C_NULL")
     end
-    fp
+    ret
 end
 
 function sam_read!(bam_hdl::Ptr{Void},bam_hdr_hdl::Ptr{Header},b::Ptr{Record})

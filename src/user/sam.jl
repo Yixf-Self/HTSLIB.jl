@@ -4,20 +4,19 @@ typealias SamIOStream BamIOStream
 @doc """ sam file name must endwith bam
 """ ->
 function sam_open(fname::AbstractString, mode::AbstractString)
+    @show fname
     fname = realpath(fname)
-    split(fname,".")[end] == "sam" || info("file name doesn't endwith sam")
+  #  split(fname,".")[end] == "sam" || info("file name doesn't endwith sam")
     
     sam_fl = hts_open(fname,mode)
     if mode == "r"
         phdr = sam_hdr_read(sam_fl) #header info
     else
-#        info("Not sure in sam_open")
         phdr = bam_hdr_init()
     end
     prec = bam_init1()
     kstr = KString(0,0,C_NULL)
     pkstr = convert(Ptr{KString}, pointer_from_objref(kstr))
-    
     SamIOStream(fname,sam_fl,phdr,prec,pkstr)
 end
 
@@ -25,7 +24,6 @@ function sam_hdr_parse(str::AbstractString)
     l_text = Int32(length(str))
     str = string(str,'\0')
     text = convert(Cstring, pointer(str))
-    @show l_text,bytestring(text)
     sam_hdr_parse(l_text,text)
 end
 
