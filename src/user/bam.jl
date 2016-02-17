@@ -42,7 +42,7 @@ end
 function bam_hdr_read!(bios::BamIOStream)
     bios.phdr = bam_hdr_read(bios.handle)
 end
-
+#=
 @doc """ read a record from a bam iostream
 """ ->
 function readline(bios::BamIOStream)
@@ -129,3 +129,4 @@ function close(bios::BamIOStream)
     info("prec,pdhr closedd")
     sam_close(bios.handle)
 end
+=#

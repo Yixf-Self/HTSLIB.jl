@@ -470,11 +470,13 @@ end
      *** SAM I/O ***
      ***************/
 =#
+#=
 @doc """
     #define sam_open(fn, mode) (hts_open((fn), (mode)))
     htsFile *hts_open(const char *fn, const char *mode)        
 """ ->
 sam_open(fn::AbstractString,mode::AbstractString) = hts_open(fn,mode)
+=#
 @doc """
     #define sam_open_format(fn, mode, fmt) (hts_open_format((fn), (mode), (fmt)))
     htsFile *hts_open_format(const char *fn, const char *mode, const htsFormat *fmt);        
