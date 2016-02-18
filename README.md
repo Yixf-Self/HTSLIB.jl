@@ -17,6 +17,14 @@ Linux: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch=mast
 ```Julia
 
 	HTSLIB.readlines("data/100.bam")
+	
+	bios = HTSLIB.open("data/100.bam","r","bam") #OR HTSLIB.bam_open("data/100.bam","r")
+	while !HTSLIB.eof(bios)
+		line = HTSLIB.readline(bios)
+		#code of processing line
+	end
+	close(bios)
+	
 ```
 **write a bam file**
 ```Julia
