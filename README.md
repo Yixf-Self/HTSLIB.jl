@@ -1,5 +1,5 @@
 # HTSLIB
-HTSLIB.jl is a julia wrapper for [htslib](https://github.com/samtools/htslib).
+HTSLIB.jl is a julia wrapper for [htslib](https://github.com/samtools/htslib) for accessing common high-throughput sequencing data file formats.
 
 This package is under active development. Welcome for everyone to give me advices.
 
