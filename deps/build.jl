@@ -31,24 +31,28 @@ if !detecthts()
     
     provides(BuildProcess,
              (@build_steps begin
-                CreateDirectory(_srcdir)
-                CreateDirectory(_libdir)
-                @build_steps begin
-                  ChangeDirectory(_srcdir)
-                  `rm -rf htslib`
-                  `wget https://github.com/samtools/htslib/releases/download/1.3/htslib-1.3.tar.bz2`
-                  `tar xvf htslib-1.3.tar.bz2`
-                   @linux_only FileRule(joinpath(_libdir, "libhts.so"), @build_steps begin
-                   @osx_only FileRule(joinpath(_libdir, "libhts.dylib"), @build_steps begin                     
-                     ChangeDirectory(_htsdir)
-                     `autoconf`
-                     `./configure`
-                     `make`
-                     @linux_only `cp libhts.so $_libdir`
-                     @osx_only `cp libhts.dylib $_libdir`
-                     @windows_only `cp libhts.dll $_libdir`
-                   end)
-                end
+              CreateDirectory(_srcdir)
+              CreateDirectory(_libdir)
+              @build_steps begin
+              ChangeDirectory(_srcdir)
+              `rm -rf htslib`
+              `wget https://github.com/samtools/htslib/releases/download/1.3/htslib-1.3.tar.bz2`
+              `tar xvf htslib-1.3.tar.bz2`
+              @linux_only FileRule(joinpath(_libdir, "libhts.so"), @build_steps begin
+                                   ChangeDirectory(_htsdir)
+                                   `autoconf`
+                                   `./configure`
+                                   `make`
+                                   end)
+              @osx_only FileRule(joinpath(_libdir, "libhts.so"), @build_steps begin
+                                 ChangeDirectory(_htsdir)
+                                 `autoconf`
+                                 `./configure`
+                                 `make`
+                                 @osx_only `cp libhts.dylib $_libdir`
+                                 end)
+                  
+              end
              end), hts)
     
     info("install begins")

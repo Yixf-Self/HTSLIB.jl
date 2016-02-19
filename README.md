@@ -3,7 +3,7 @@ HTSLIB.jl is a julia wrapper for [htslib](https://github.com/samtools/htslib) fo
 
 This package is under active development. Welcome for everyone to give me advices.
 
-Linux: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch=master)](https://travis-ci.org/OpenGene/HTSLIB.jl)
+Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch=master)](https://travis-ci.org/OpenGene/HTSLIB.jl)
 [![Documentation Status](http://readthedocs.org/projects/htslibjl/badge/?version=latest)](http://htslibjl.readthedocs.org/en/latest/?badge=latest)
 
 ### Installation
@@ -31,7 +31,7 @@ Linux: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch=mast
 
 	fw = HTSLIB.open("data/test_write.bam","wb","bam")
 	fr = HTSLIB.open("data/100.bam","rb","bam")
-
+	
 	fw.phdr = HTSLIB.sam_hdr_parse(HTSLIB.strptr(fr.phdr))
 
 	HTSLIB.writelines(fw,data)
