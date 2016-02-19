@@ -17,7 +17,7 @@ Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch
 ```Julia
 
 	HTSLIB.readlines("data/100.bam")
-	
+	#OR
 	bios = HTSLIB.open("data/100.bam","r","bam") #OR HTSLIB.bam_open("data/100.bam","r")
 	while !HTSLIB.eof(bios)
 		line = HTSLIB.readline(bios)
@@ -35,6 +35,11 @@ Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch
 	fw.phdr = HTSLIB.sam_hdr_parse(HTSLIB.strptr(fr.phdr))
 
 	HTSLIB.writelines(fw,data)
+	#OR
+	HTSLIB.sam_hdr_write(fw.handle,fw.phdr)
+	for line in data
+		writeline(fw,line)
+    end
 
 	HTSLIB.close(fw)
 	HTSLIB.close(fr)
