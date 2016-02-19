@@ -1,45 +1,6 @@
-#=
-typedef struct {
-    uint32_t is_bin:1, is_write:1, is_be:1, is_cram:1, dummy:28;
-    int64_t lineno;
-    kstring_t line;
-    char *fn, *fn_aux;
-    union {
-        BGZF *bgzf;
-        struct cram_fd *cram;
-        struct hFILE *hfile;
-        void *voidp;
-    } fp;
-    htsFormat format;
-} htsFile;
-=#
-#=
-type HTSFormat #32
-    data1::Int64 #8
-    data2::Int64 #8
-    data3::Int32 #4
-    data4::Int32 #4
-    #compression::Cshort #2
-    specific::Ptr{Void} #8
-end
-=#
-
 @enum htsFormatCategory unknown_category sequence_data variant_data index_file region_list category_maximum=32767
 @enum htsExactFormat unknown_format binary_format text_format sam bam bai cram crai vcf bcf csi gzi tbi bed format_maximum=32767
 @enum htsCompression no_compression gzip bgzf custom compression_maximum=32767
-
-type Version
-    major::Cshort
-    minor::Cshort
-end
-
-type HTSFormat
-    category::htsFormatCategory
-    format::htsExactFormat
-    version::Version
-    compression_level::Cshort
-    specific::Ptr{Void}
-end
 
 immutable Record
     tid::Int32 # chromosome ID defined by bam_hdr_t
@@ -75,119 +36,26 @@ type KString
     end
 end
 
-type HFile
-    buffer::Ptr{Cchar}
-    beg::Ptr{Cchar}
-    ed::Ptr{Cchar}
-    limit::Ptr{Cchar}
-    backend::Ptr{Void}
-    offset::Ptr{Int64}
-    has_errno::Cint
-end
-
-bitstype 32 ERR32
-
-type BGZF
-    err::ERR32
-    cache_size::Cint
-    block_length::Cint
-    block_offset::Cint
-    block_address::Int64
-    uncompressed_address::Int64
-    uncompressed_block::Ptr{Void}
-    compressed_block::Ptr{Void}
-    cache::Ptr{Void}
-    fp::Ptr{HFile}
-    mt::Ptr{Void} #struct bgzf_mtaux_t
-    idx::Ptr{Void} # bgzidx_t
-    idx_build_otf::Cint
-    gz_stream::Ptr{Void}# z_stream *
-end
-
-type Cram_fd 
-    fp::Ptr{HFile}
-    mode::Cint
-    version::Cint
-    file_def::Ptr{Void}
-    header::Ptr{Void}
-
-    prefix::Ptr{Cchar}
-    record_counter::Clong
-    err::Cint
-    ctr::Ptr{Void}
-    first_base::Cint
-    last_base::Cint
-    
-    refs::Ptr{Void}              
-    ref::Ptr{Cchar}
-    ref_free::Ptr{Cchar}      
-    ref_id::Cint
-    ref_start::Cint
-    ref_end::Cint
-    ref_fn::Ptr{Cchar}
-    
-    level::Cint
-    #    cram_metrics *m[DS_END];
-    
-    decode_md::Cint
-    verbose::Cint
-    seqs_per_slice::Cint
-    slices_per_container::Cint
-    embed_ref::Cint
-    no_ref::Cint
-    ignore_md5::Cint
-    use_bz2::Cint
-    use_rans::Cint
-    use_lzma::Cint
-    shared_ref::Cint
-    required_fields::Cuint
-  #  cram_range range # todo
-    
-#        unsigned int bam_flag_swap[0x1000]; // cram -> bam flags
- #       unsigned int cram_flag_swap[0x1000];// bam -> cram flags
-  #      unsigned char L1[256];              // ACGT{*} ->0123{4}
-   #     unsigned char L2[256];              // ACGTN{*}->01234{5}
-    #    char cram_sub_matrix[32][32];       // base substituion codes
-
-    index_sz::Cint
-    index::Ptr{Void}#                  // array, sizeof index_sz
-    first_container::Clong
-    eof::Cint
-    last_slice::Cint#                     // number of recs encoded in last slice
-    multi_seq::Cint
-    unsorted::Cint
-    empty_container::Cint#                // Marker for EOF block
-
-    own_pool::Cint
-    pool::Ptr{Void}
-    rqueue::Ptr{Void}
-    #            pthread_mutex_t metrics_lock
-    #           pthread_mutex_t ref_lock
-    bl::Ptr{Void}
-    #          pthread_mutex_t bam_list_lock
-    job_pending::Ptr{Void}
-    ooc::Cint                       #     // out of containers.  
-end
-
 bitstype 32 BINS
 
 type HTSFile
-    bins::UInt32 #4 # ???
-    lineno::Int64 #8
-#    line::Ptr{KString} #24
-    l::Csize_t #8
-    m::Csize_t #8
-    s::Ptr{Cchar} #8
+    bins::UInt32 
+    lineno::Int64 
+
+    l::Csize_t 
+    m::Csize_t 
+    s::Ptr{Cchar}
     
-    fn::Ptr{Cchar} #8
-    fn_aux::Ptr{Cchar} #8
-    bgzf::Ptr{Void} #8 #???
-#   format::HTSFormat #32 # ???
+    fn::Ptr{Cchar}
+    fn_aux::Ptr{Cchar}
+    bgzf::Ptr{Void}
+
     category::htsFormatCategory
     format::htsExactFormat
-#   version::Version
+
     major::Cshort
     minor::Cshort
+    
     compression_level::Cshort
     specific::Ptr{Void}
 end
@@ -202,7 +70,6 @@ end
  @field text        plain text
  @field sdict       header dictionary
 =#
-
 type Header
     n_targets::Int32  
     ignore_sam_err::Int32
@@ -233,28 +100,6 @@ function show(io::IO,ks::KString)
     end
     print(io,ASCIIString(data))
 end
-
-const cigarstring = "MIDNSHPX="
-const seq_nt16_str = "=ACMGRSVTWYHKDBN"
-const seq_nt16_table = UInt8[
-    15,15,15,15, 15,15,15,15, 15,15,15,15, 15,15,15,15,
-    15,15,15,15, 15,15,15,15, 15,15,15,15, 15,15,15,15,
-    15,15,15,15, 15,15,15,15, 15,15,15,15, 15,15,15,15,
-     1, 2, 4, 8, 15,15,15,15, 15,15,15,15, 15, 0,15,15, #0 for "="
-    15, 1,14, 2, 13,15,15, 4, 11,15,15,12, 15, 3,15,15,
-    15,15, 5, 6,  8,15, 7, 9, 15,10,15,15, 15,15,15,15,
-    15, 1,14, 2, 13,15,15, 4, 11,15,15,12, 15, 3,15,15,
-    15,15, 5, 6,  8,15, 7, 9, 15,10,15,15, 15,15,15,15,
-
-    15,15,15,15, 15,15,15,15, 15,15,15,15, 15,15,15,15,
-    15,15,15,15, 15,15,15,15, 15,15,15,15, 15,15,15,15,
-    15,15,15,15, 15,15,15,15, 15,15,15,15, 15,15,15,15,
-    15,15,15,15, 15,15,15,15, 15,15,15,15, 15,15,15,15,
-    15,15,15,15, 15,15,15,15, 15,15,15,15, 15,15,15,15,
-    15,15,15,15, 15,15,15,15, 15,15,15,15, 15,15,15,15,
-    15,15,15,15, 15,15,15,15, 15,15,15,15, 15,15,15,15,
-    15,15,15,15, 15,15,15,15, 15,15,15,15, 15,15,15,15
-]
 
 function bam_hdr_init()
     ccall((:bam_hdr_init,libhts),Ptr{Header},())
@@ -662,45 +507,6 @@ function bam_get_aux(rec::Record)
     ASCIIString(data)
 end
 
-@doc """ Qname   Flag Chr Pos Mapq Cigar Rnext Pnext TLEN SEQ    QUAL AUX
-         l_qname                   n_cigar                l_qseq l_qseq l_data-others 
-""" ->
-function show(io::IO, rec::Record)
-    st_qname = 1
-    ed_qname = Int64(rec.l_qname)
-    qname = stringfrompointer(rec.data,1,ed_qname)
-    print(io,qname,"\t")
-    flag = Int64(rec.flag)
-    print(io,flag,"\t")
-    chr = rec.tid
-    print(io,chr,"\t")
-    pos = rec.pos+1
-    print(io,pos,"\t")
-    mapq = Int64(rec.qual)
-    print(io,mapq,"\t")
-    st_cigar = ed_qname + 1
-    ed_cigar = st_cigar + rec.n_cigar
-    cigar = bam_get_cigar(rec)
-    print(io,cigar,"\t")
-    rnext = rec.mtid
-    print(io,rnext,"\t")
-    pnext = rec.mpos + 1 
-    print(io,pnext,"\t")
-    tlen = rec.isize
-    print(io,tlen,"\t")
-    st_seq = ed_cigar + 1
-    ed_seq = st_seq + rec.l_qseq
-    seq = bam_get_seq(rec)
-    print(io,seq,"\t")
-    st_qual = ed_seq + 1
-    ed_qual = st_qual + rec.l_qseq
-    qual = bam_get_qual(rec)
-    print(io,qual,"\t")
-    st_aux = ed_qual + 1
-    ed_aux = rec.l_data-1
-    aux = bam_get_aux(rec)
-    print(io,aux,"\n")
-end
 function hts_open{T<:AbstractString}(fn::T,mode::T)
     fp = pointer(fn.data)
     mdp = pointer(mode.data)

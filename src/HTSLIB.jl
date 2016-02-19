@@ -3,12 +3,23 @@ module HTSLIB
 using Logging
 @Logging.configure(level=DEBUG)
 
-@linux_only const libhts = "libhts.so" #Libdl.find_library(["libhts.so"],[joinpath(dirname(dirname(@__FILE__)),"deps/usr/lib")])
+@linux_only const libhts = Libdl.find_library(["libhts.so"],[joinpath(dirname(dirname(@__FILE__)),"deps/usr/lib")])
 @osx_only const libhts = Libdl.find_library(["libhts.dylib"],[joinpath(dirname(dirname(@__FILE__)),"deps/usr/lib")])
 
 import Base.open
 
-export open,sam_open,bam_open
+export open,
+       sam_open,
+       bam_open,
+       readline,
+       writeline,
+       eof,
+       readlines,
+       writelines,
+       close
+       
+     
+
 
 include("bam/bam.jl")
 include("user/bam.jl")

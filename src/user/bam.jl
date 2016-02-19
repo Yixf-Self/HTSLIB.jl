@@ -1,4 +1,3 @@
-
 type BamIOStream <: IO
     name::AbstractString
     handle::Ptr{Void}
