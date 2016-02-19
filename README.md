@@ -15,8 +15,10 @@ Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch
 ### Examples
 **query reads in the target interval**
 ```Julia
-	
-	bios = HTSLIB.open("data/100_sort.bam","rb","bam")
+
+	using HTSLIB
+
+	bios = open("data/100_sort.bam","rb","bam")
 	htsfl = unsafe_load(convert(Ptr{HTSLIB.HTSFile},bios.handle))
 	pidx = HTSLIB.sam_index_load(bios,"data/100_sort.bam")
 	iters = HTSLIB.sam_itr_querys(pidx,bios.phdr,"chr1:6543250-6542550")
@@ -26,17 +28,19 @@ Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch
 		kstr = HTSLIB.strptr(bios.pkstr)
 		print(kstr)
 	end
+	close(bios)
 	
 ```
 
 **read a bam file**
 ```Julia
 
-	HTSLIB.readlines("data/100.bam")
+	using HTSLIB
+	data = readlines("data/100.bam")
 	#OR
-	bios = HTSLIB.open("data/100.bam","r","bam") #OR HTSLIB.bam_open("data/100.bam","r")
-	while !HTSLIB.eof(bios)
-		line = HTSLIB.readline(bios)
+	bios = open("data/100.bam","r","bam") # bam_open("data/100.bam","r")
+	while !eof(bios)
+		line = readline(bios)
 		#code of processing line
 	end
 	close(bios)
@@ -45,42 +49,45 @@ Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch
 **write a bam file**
 ```Julia
 
-	fw = HTSLIB.open("data/test_write.bam","wb","bam")
-	fr = HTSLIB.open("data/100.bam","rb","bam")
+	using HTSLIB
+	fw = open("data/test_write.bam","wb","bam")
+	fr = open("data/100.bam","rb","bam")
 	
 	fw.phdr = HTSLIB.sam_hdr_parse(HTSLIB.strptr(fr.phdr))
 
-	HTSLIB.writelines(fw,data)
+	writelines(fw,data)
 	#OR
 	HTSLIB.sam_hdr_write(fw.handle,fw.phdr)
 	for line in data
 		writeline(fw,line)
     end
 
-	HTSLIB.close(fw)
-	HTSLIB.close(fr)
+	close(fw)
+	close(fr)
 ```
 **read a sam file**
 
 ```Julia
 
-	HTSLIB.readlines("data/100.sam")
+	using HTSLIB
+	data = readlines("data/100.sam")
 ```
 **write a bam file with a header of a sam file**
 
 ```Julia
 
-	fw = HTSLIB.open("data/test_write.bam","wb","bam")
-	fr = HTSLIB.open("data/100.bam","rb","sam")
+	using HTSLIB
+	fw = open("data/test_write.bam","wb","bam")
+	fr = open("data/100.bam","rb","sam")
 	
 	header = unsafe_load(fr.phdr)
 	newheader = deepcopy(header)
 	phdr = convert(Ptr{HTSLIB.Header}, pointer_from_objref(newheader))
 	fw.phdr = phdr
 
-	HTSLIB.writelines(fw,data)
+	writelines(fw,data)
 
-	HTSLIB.close(fw)
-	HTSLIB.close(fr)
+	close(fw)
+	close(fr)
 	
 ```
