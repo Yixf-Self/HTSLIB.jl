@@ -38,7 +38,8 @@ if !detecthts()
                   `rm -rf htslib`
                   `wget https://github.com/samtools/htslib/releases/download/1.3/htslib-1.3.tar.bz2`
                   `tar xvf htslib-1.3.tar.bz2`
-                   FileRule(joinpath(_libdir, "libhts.so"), @build_steps begin
+                   @linux_only FileRule(joinpath(_libdir, "libhts.so"), @build_steps begin
+                   @osx_only FileRule(joinpath(_libdir, "libhts.dylib"), @build_steps begin                     
                      ChangeDirectory(_htsdir)
                      `autoconf`
                      `./configure`
