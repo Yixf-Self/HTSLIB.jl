@@ -8,7 +8,8 @@ Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch
 
 ### Installation
 
-	Pkg.clone("https://github.com/OpenGene/HTSLIB.jl.git")
+	Pkg.add("HTSLIB")
+	Pkg.checkout("HTSLIB") #optional
 	Pkg.build("HTSLIB")
 	Pkg.test("HTSLIB")
 
