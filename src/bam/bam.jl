@@ -33,7 +33,7 @@ type Version
     minor::Cshort
 end
 
-immutable HTSFormat
+type HTSFormat
     category::htsFormatCategory
     format::htsExactFormat
     version::Version
@@ -60,7 +60,7 @@ immutable Record
     id::UInt64   # BAM_ID ???
 end
 
-immutable KString
+type KString
     l::Csize_t #8
     m::Csize_t #8
     s::Ptr{Cchar} #8
@@ -171,14 +171,25 @@ end
 
 bitstype 32 BINS
 
-immutable HTSFile
+type HTSFile
     bins::UInt32 #4 # ???
     lineno::Int64 #8
-    line::KString #24
+#    line::Ptr{KString} #24
+    l::Csize_t #8
+    m::Csize_t #8
+    s::Ptr{Cchar} #8
+    
     fn::Ptr{Cchar} #8
     fn_aux::Ptr{Cchar} #8
     bgzf::Ptr{Void} #8 #???
-    format::HTSFormat #32 # ???
+#   format::HTSFormat #32 # ???
+    category::htsFormatCategory
+    format::htsExactFormat
+#   version::Version
+    major::Cshort
+    minor::Cshort
+    compression_level::Cshort
+    specific::Ptr{Void}
 end
 
 #typealias Header Void

@@ -1,4 +1,5 @@
-
+strptr(kstr::KString) = strptr(kstr.s,1,kstr.l)
+strptr(p::Ptr{Int8},st::Integer,ed::Integer) = stringfrompointer(convert(Ptr{UInt8},p),Int64(st),Int64(ed))
 strptr(p::Ptr{UInt8},st::Integer,ed::Integer) = stringfrompointer(p,Int64(st),Int64(ed))
 function stringfrompointer(p::Ptr{UInt8},st::Int64,ed::Int64)
     len = ed-st+1
