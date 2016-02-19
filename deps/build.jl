@@ -1,9 +1,9 @@
 #libhts_detected = false
 function detecthts()
     @osx_only info("You should compile libhts.dylab manually and set its location to HTSLIB.libhts")
-    @osx ? true : false
+    false
 end
-@osx_only using Homebrew
+#@osx_only using Homebrew
 using BinDeps
 @BinDeps.setup
 if !detecthts()
@@ -13,7 +13,7 @@ if !detecthts()
     #provides(Sources, Dict(URI("http://zlib.net/zlib-1.2.8.tar.gz") => zlib))
     
     # Build libhts
-    
+    #=
     autoconf = library_dependency("autoconf", os=:Darwin)
     @osx_only begin
         if Pkg.installed("Homebrew") === nothing
@@ -22,7 +22,7 @@ if !detecthts()
         provides( Homebrew.HB, "autoconf", autoconf, os = :Darwin )
         #@BinDeps.install Dict(:autoconf => :autoconf)
     end
-    
+    =#
     hts = library_dependency("hts", aliases=["libhts","libhts.so","libhts.dylib","libhts.dll"])#, runtime=true, os=:Unix)
     _prefix = joinpath(BinDeps.depsdir(hts),"usr")
     _srcdir = joinpath(BinDeps.depsdir(hts),"src")
