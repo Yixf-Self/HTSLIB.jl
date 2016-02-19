@@ -13,6 +13,22 @@ Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch
 	Pkg.test("HTSLIB")
 
 ### Examples
+**query reads in the target interval**
+```Julia
+	
+	bios = HTSLIB.open("data/100_sort.bam","rb","bam")
+	htsfl = unsafe_load(convert(Ptr{HTSLIB.HTSFile},bios.handle))
+	pidx = HTSLIB.sam_index_load(bios,"data/100_sort.bam")
+	iters = HTSLIB.sam_itr_querys(pidx,bios.phdr,"chr1:6543250-6542550")
+	precord = HTSLIB.bam_init1()
+	while HTSLIB.sam_itr_next!(bios.handle,iters,precord)
+		HTSLIB.sam_format!(bios.phdr,precord,bios.pkstr)
+		kstr = HTSLIB.strptr(bios.pkstr)
+		print(kstr)
+	end
+	
+```
+
 **read a bam file**
 ```Julia
 
