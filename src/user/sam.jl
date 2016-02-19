@@ -4,9 +4,9 @@ typealias SamIOStream BamIOStream
 @doc """ sam file name must endwith bam
 """ ->
 function sam_open(fname::AbstractString, mode::AbstractString)
-    @show fname
     fname = realpath(fname)
-  #  split(fname,".")[end] == "sam" || info("file name doesn't endwith sam")
+    split(fname,".")[end] == "sam" ||
+    split(fname,".")[end] == "bam" || info("file name doesn't endwith sam/bam")
     
     sam_fl = hts_open(fname,mode)
     if mode == "r"
@@ -55,7 +55,6 @@ end
 @doc """ read all the records from a bam file
 """ ->
 function readlines(fname::AbstractString)
-    info("In the sam open")
     sios = sam_open(fname,"r")
     data = readlines(sios)
     close(sios)

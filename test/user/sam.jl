@@ -42,5 +42,5 @@ HTSLIB.writelines(fw,data)
 HTSLIB.close(fw)
 HTSLIB.close(fr)
 
-info("writelines(fw,data) success")
+info("writelines success")
 

@@ -10,7 +10,6 @@ Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch
 
 	Pkg.add("HTSLIB")
 	Pkg.checkout("HTSLIB") #optional
-	Pkg.build("HTSLIB")
 	Pkg.test("HTSLIB")
 
 ### Examples

@@ -693,9 +693,7 @@ end
 function hts_open{T<:AbstractString}(fn::T,mode::T)
     fp = pointer(fn.data)
     mdp = pointer(mode.data)
-    @show fp,typeof(fp)
     ret = ccall((:hts_open,libhts),Ptr{Void},(Ptr{Cchar},Ptr{Cchar}),fp,mdp)
-    @show "after hts_open"
     if ret == C_NULL
         error("hts_open return C_NULL")
     end

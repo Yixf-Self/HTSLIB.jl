@@ -42,14 +42,14 @@ if !detecthts()
                                    ChangeDirectory(_htsdir)
                                    `autoconf`
                                    `./configure`
-                                   `make`
+                                   `make libhts.so`
                                    `cp libhts.so $_libdir`
                                    end)
               @osx_only FileRule(joinpath(_libdir, "libhts.dylib"), @build_steps begin
                                  ChangeDirectory(_htsdir)
                                  `autoconf`
                                  `./configure`
-                                 `make`
+                                 `make libhts.dylib`
                                  `cp libhts.dylib $_libdir`
                                  end)
                   
