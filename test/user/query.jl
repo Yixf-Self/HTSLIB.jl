@@ -29,5 +29,5 @@ precord = HTSLIB.bam_init1()
 while HTSLIB.sam_itr_next!(bios.handle,iters,precord)
     HTSLIB.sam_format!(bios.phdr,precord,bios.pkstr)
     kstr = HTSLIB.strptr(bios.pkstr)
-    print(kstr)
+    println(kstr)
 end
