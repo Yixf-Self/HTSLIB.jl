@@ -13,7 +13,7 @@ Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch
 	Pkg.test("HTSLIB")
 
 ### Examples
-**query reads in the target interval**
+**query reads given the target interval**
 ```Julia
 
 	using HTSLIB
