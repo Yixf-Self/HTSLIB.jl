@@ -4,6 +4,7 @@ HTSLIB.jl is a julia wrapper for [htslib](https://github.com/samtools/htslib) fo
 This package is under active development. Welcome for everyone to give me advices.
 
 Linux, OSX: [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch=master)](https://travis-ci.org/OpenGene/HTSLIB.jl)
+[![Packagist](https://img.shields.io/packagist/l/doctrine/orm.svg)]()
 [![Documentation Status](http://readthedocs.org/projects/htslibjl/badge/?version=latest)](http://htslibjl.readthedocs.org/en/latest/?badge=latest)
 
 ### Installation
