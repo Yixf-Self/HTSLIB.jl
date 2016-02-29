@@ -1,6 +1,6 @@
 type Bam_pileup
     b::Ptr{Record}
-    qpos::Cint32
+    qpos::Cint
     indel::Cint
     level::Cint
     flag::Cuint
