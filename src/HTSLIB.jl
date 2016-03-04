@@ -6,7 +6,7 @@ using Logging
 @linux_only const libhts = Libdl.find_library(["libhts.so"],[joinpath(dirname(dirname(@__FILE__)),"deps/usr/lib")])
 @osx_only const libhts = Libdl.find_library(["libhts.dylib"],[joinpath(dirname(dirname(@__FILE__)),"deps/usr/lib")])
 
-import Base.open
+import Base:open,readline,eof,close
 
 export open,
        sam_open,
@@ -14,7 +14,6 @@ export open,
        readline,
        writeline,
        eof,
-       readlines,
        writelines,
        close
        

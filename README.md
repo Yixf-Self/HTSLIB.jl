@@ -42,7 +42,7 @@ This package is under active development. Welcome for everyone to give me advice
 ```Julia
 
 	using HTSLIB
-	data = readlines("data/100.bam")
+	data = HTSLIB.readlines("data/100.bam")
 	#OR
 	bios = open("data/100.bam","r","bam") # bam_open("data/100.bam","r")
 	while !eof(bios)
