@@ -21,11 +21,11 @@ end
 
 @doc """ bam file name must endwith bam
 """ ->
-function bam_open(fname::AbstractString, mode::AbstractString)
-    split(fname,".")[end] == "bam" || info("file name doesn't endwith bam")
+function bam_open(fname::AbstractString, mode::AbstractString="rb")
+    endswith(fname, ".bam") || info("file name doesn't endwith bam")
     fname = realpath(fname)
     bam_fl = hts_open(fname, mode)
-    if mode == "rb"
+    if mode == "rb" || mode == "r"
         # bam_hdr_read(bam_fl->fp.bgzf)
         phdr = sam_hdr_read(bam_fl) #header info
     else
