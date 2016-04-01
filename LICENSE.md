@@ -1,6 +1,6 @@
 The HTSLIB.jl package is licensed under the MIT "Expat" License:
 
-> Copyright (c) 2015: guolanting.
+> Copyright (c) 2015: OpenGene.
 > 
 > Permission is hereby granted, free of charge, to any person obtaining a copy
 > of this software and associated documentation files (the "Software"), to deal
