@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/OpenGene/HTSLIB.jl.svg?branch=master)](https://travis-ci.org/OpenGene/HTSLIB.jl)
 [![Packagist](https://img.shields.io/packagist/l/doctrine/orm.svg)]()
-[![Coverage Status](https://coveralls.io/repos/OpenGene/HTSLIB.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/OpenGene/HTSLIB.jl?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/OpenGene/HTSLIB.jl/badge.svg?branch=master)](https://coveralls.io/github/OpenGene/HTSLIB.jl?branch=master)
 [![Documentation Status](http://readthedocs.org/projects/htslibjl/badge/?version=latest)](http://htslibjl.readthedocs.org/en/latest/?badge=latest)
 [![HTSLIB](http://pkg.julialang.org/badges/HTSLIB_0.4.svg)](http://pkg.julialang.org/?pkg=HTSLIB)
 [![HTSLIB](http://pkg.julialang.org/badges/HTSLIB_0.5.svg)](http://pkg.julialang.org/?pkg=HTSLIB)
