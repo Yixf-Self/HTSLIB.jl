@@ -44,7 +44,6 @@ end
 
 function bgzf_eof(fp::Ptr{BGZF})
     flag = @fncall(:bgzf_check_EOF, Int32, (Ptr{BGZF},), fp)
-
     if flag == 2
         error("bgzf isn't seekable")
     end
@@ -52,10 +51,10 @@ function bgzf_eof(fp::Ptr{BGZF})
         error("on error")
     end
     if flag == 0
-        return false
+        return true
     end
     if flag == 1
-        return true
+        return false
     end
 end
 
