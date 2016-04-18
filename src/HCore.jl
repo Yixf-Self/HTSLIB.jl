@@ -22,5 +22,7 @@ end
 
 include("core.jl")
 include("fp.jl")
+include("io.jl")
+include("utils.jl")
 
 end

@@ -46,3 +46,20 @@ type Bam1_t
     data::Ptr{UInt8}
     id::UInt64
 end
+
+type KStr
+    l::Csize_t
+    m::Csize_t
+    s::Ptr{Cchar}
+    
+    function KStr()
+        new(0,0,C_NULL)
+    end
+end
+function kstrToASCII(kstr::KStr)
+    strptr(kstr.s, 1, kstr.l)
+end
+function kstrToASCII(pkstr::Ptr{KStr})
+    kstr = unsafe_load(pkstr)
+    kstrToASCII(kstr)
+end
