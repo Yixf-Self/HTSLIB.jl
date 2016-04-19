@@ -5,6 +5,7 @@ type BamIOS <: BamIO
     h::Ptr{Bam_hdr_t}
     b::Ptr{Bam1_t}
     kstr::Ptr{KStr}
+    end_file::Bool
 end
 
 function bam_open{T<:DirectIndexString}(path::T, mode::Union{ASCIIString,Char})
@@ -20,11 +21,11 @@ function bam_open{T<:DirectIndexString}(path::T, mode::Union{ASCIIString,Char})
     b = bam_init1()
     
     kstr = get_pointer(KStr())
-    BamIOS(bgzf, h, b, kstr)
+    BamIOS(bgzf, h, b, kstr, false)
 end
 
 function eof(bios::BamIOS)
-    bgzf_eof(bios.bgzf)
+    bios.end_file
 end
 
 function close(bios::BamIOS)
@@ -34,11 +35,14 @@ function close(bios::BamIOS)
 end
 
 function readline(bios::BamIOS)
-    bam_read1!(bios.bgzf, bios.b)
-    sam_format1!(bios.h, bios.b, bios.kstr)
-    str = kstrToASCII(bios.kstr)
-    str = deepcopy(str)
-    split(str,"\t")
+    flag = bam_read1!(bios.bgzf, bios.b)
+    if flag == -1
+        bios.end_file = true
+    end
+    #sam_format1!(bios.h, bios.b, bios.kstr)
+    #str = kstrToASCII(bios.kstr)
+    #str = deepcopy(str)
+    #split(str,"\t")
 end
 
 function readlines(bios::BamIOS)
