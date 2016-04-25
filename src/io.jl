@@ -19,8 +19,11 @@ function bam_open{T<:DirectIndexString}(path::T, mode::Union{ASCIIString,Char})
     bgzf = bgzf_open(ppath, pmode)
     h = bam_hdr_read(bgzf)
     b = bam_init1()
+
+    kstr = get_ptr_of_null_kstr(100000)
     
-    kstr = get_pointer(KStr())
+    @show kstr
+    @show unsafe_load(kstr).s
     BamIOS(bgzf, h, b, kstr, false)
 end
 
@@ -29,8 +32,8 @@ function eof(bios::BamIOS)
 end
 
 function close(bios::BamIOS)
-    bam_hdr_destroy(bios.h)
     bam_destroy1(bios.b)
+    bam_hdr_destroy(bios.h)
     bgzf_close(bios.bgzf)
 end
 
@@ -39,7 +42,7 @@ function readline(bios::BamIOS)
     if flag == -1
         bios.end_file = true
     end
-    #sam_format1!(bios.h, bios.b, bios.kstr)
+    sam_format1!(bios.h, bios.b, bios.kstr)
     #str = kstrToASCII(bios.kstr)
     #str = deepcopy(str)
     #split(str,"\t")

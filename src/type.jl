@@ -1,4 +1,3 @@
-
 type BGZF
     box::Int32
     cache_size::Int32
@@ -51,14 +50,16 @@ type KStr
     l::Csize_t
     m::Csize_t
     s::Ptr{Cchar}
-    
-    function KStr()
-        new(0,0,C_NULL)
-    end
 end
+
+function get_ptr_of_null_kstr(num::Int64)
+    @fncall(:get_ptr_of_kstr, Ptr{KStr}, (Int64,), num)
+end
+
 function kstrToASCII(kstr::KStr)
     strptr(kstr.s, 1, kstr.l)
 end
+
 function kstrToASCII(pkstr::Ptr{KStr})
     kstr = unsafe_load(pkstr)
     kstrToASCII(kstr)
