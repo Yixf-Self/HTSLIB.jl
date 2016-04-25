@@ -1,4 +1,4 @@
-module HCore
+module HT
 
 const LIBHTS = "/haplox/users/guo/Github/htslib/libhts.so"
 const LIBKSTR = "/haplox/users/guo/Github/HTSLIB.jl/src/libkstr.so"

@@ -5,6 +5,24 @@ end
 
 using BinDeps
 @BinDeps.setup
+
+function append_code()
+    codes = """
+    kstring_t * get_ptr_of_kstr(int num){
+      char * ch = (char *)malloc(num);
+      kstring_t *p = (kstring_t *)malloc(sizeof(kstring_t));
+      p->l = 0;
+      p->m = num;
+      p->s = ch;
+      return p;
+    };
+    """
+    open("htslib/sam.c","a+") do file
+        write(file, codes)
+    end
+end
+
+
 if !detecthts()
 
     hts = library_dependency("hts", aliases=["libhts","libhts.so","libhts.dylib","libhts.dll"])
@@ -22,6 +40,8 @@ if !detecthts()
               `rm -rf htslib`
               `wget https://github.com/samtools/htslib/releases/download/1.3/htslib-1.3.tar.bz2`
               `tar xvf htslib-1.3.tar.bz2`
+               append_code()
+              
               @linux_only FileRule(joinpath(_libdir, "libhts.so"), @build_steps begin
                                    ChangeDirectory(_htsdir)
                                    `autoconf`

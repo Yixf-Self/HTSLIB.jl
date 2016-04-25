@@ -22,8 +22,6 @@ function bam_open{T<:DirectIndexString}(path::T, mode::Union{ASCIIString,Char})
 
     kstr = get_ptr_of_null_kstr(100000)
     
-    @show kstr
-    @show unsafe_load(kstr).s
     BamIOS(bgzf, h, b, kstr, false)
 end
 
@@ -43,13 +41,12 @@ function readline(bios::BamIOS)
         bios.end_file = true
     end
     sam_format1!(bios.h, bios.b, bios.kstr)
-    #str = kstrToASCII(bios.kstr)
-    #str = deepcopy(str)
-    #split(str,"\t")
+    str = kstrToASCII(bios.kstr)
+    str = deepcopy(str)
+    split(str,"\t")
 end
 
 function readlines(bios::BamIOS)
-    @show bios
     i = 0
     while !eof(bios)
         i += 1
