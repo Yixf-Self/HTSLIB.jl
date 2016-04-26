@@ -53,7 +53,7 @@ type KStr
 end
 
 function get_ptr_of_null_kstr(num::Int64)
-    ccall((:get_ptr_of_kstr, libkstr),Ptr{KStr}, (Int64,), num)
+    ccall((:get_ptr_of_kstr, LIBKSTR),Ptr{KStr}, (Int64,), num)
 end
 
 function kstrToASCII(kstr::KStr)
