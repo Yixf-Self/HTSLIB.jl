@@ -13,7 +13,7 @@ include("user/sam.jl")
 include("user/query.jl")
 =#
 
-bios = HTSLIB.bam_open("../data/100.bam","rb")
+bios = HTSLIB.bam_open("data/100_sort.bam","rb")
 
 while !HTSLIB.eof(bios)
     line = HTSLIB.readline(bios)
