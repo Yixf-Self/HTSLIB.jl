@@ -19,6 +19,20 @@ This package is under active development. Welcome for everyone to give me advice
 	Pkg.test("HTSLIB")
 
 ### Examples
+
+**read a bam file**
+```Julia
+
+	using HTSLIB
+	bios = bam_open("data/100.bam","rb")
+	while !eof(bios)
+		line = readline(bios)
+		#code of processing line
+	end
+	close(bios)
+	
+```
+
 **query reads given the target interval**
 ```Julia
 
@@ -38,20 +52,7 @@ This package is under active development. Welcome for everyone to give me advice
 	
 ```
 
-**read a bam file**
-```Julia
 
-	using HTSLIB
-	data = HTSLIB.readlines("data/100.bam")
-	#OR
-	bios = open("data/100.bam","r","bam") # bam_open("data/100.bam","r")
-	while !eof(bios)
-		line = readline(bios)
-		#code of processing line
-	end
-	close(bios)
-	
-```
 **write a bam file**
 ```Julia
 
