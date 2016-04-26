@@ -17,7 +17,7 @@ function append_code()
       return p;
     };
     """
-    open("htslib/sam.c","a+") do file
+    open("sam.c","a+") do file
         write(file, codes)
     end
 end
