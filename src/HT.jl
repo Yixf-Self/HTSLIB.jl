@@ -1,7 +1,7 @@
-module HT
+#module HT
 
-const LIBHTS = "/haplox/users/guo/Github/htslib/libhts.so"
-const LIBKSTR = "/haplox/users/guo/Github/HTSLIB.jl/src/libkstr.so"
+#const LIBHTS = "/haplox/users/guo/Github/htslib/libhts.so"
+#const LIBKSTR = "/haplox/users/guo/Github/HTSLIB.jl/src/libkstr.so"
 
 macro fncall(fn, return_type)
     f = eval(fn)
@@ -35,4 +35,4 @@ include("io.jl")
 include("utils.jl")
 
 
-end
+#end
