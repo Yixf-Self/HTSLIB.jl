@@ -3,8 +3,8 @@ module HTSLIB
 #using Logging
 #@Logging.configure(level=DEBUG)
 
-@linux_only const libhts = Libdl.find_library(["libhts.so"],[joinpath(dirname(dirname(@__FILE__)),"deps/usr/lib")])
-@osx_only const libhts = Libdl.find_library(["libhts.dylib"],[joinpath(dirname(dirname(@__FILE__)),"deps/usr/lib")])
+@linux_only const LIBHTS = Libdl.find_library(["libhts.so"],[joinpath(dirname(dirname(@__FILE__)),"deps/usr/lib")])
+@osx_only const LIBHTS = Libdl.find_library(["libhts.dylib"],[joinpath(dirname(dirname(@__FILE__)),"deps/usr/lib")])
 
 #=
 import Base:open,readline,eof,close
