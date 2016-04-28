@@ -1,7 +1,7 @@
 #module HT
 
 #const LIBHTS = "/haplox/users/guo/Github/htslib/libhts.so"
-const LIBKSTR = joinpath(dirname(@__FILE__), "c/libkstr.so")
+#const LIBKSTR = joinpath(dirname(@__FILE__), "c/libkstr.so")
 
 macro fncall(fn, return_type)
     f = eval(fn)
@@ -10,7 +10,6 @@ macro fncall(fn, return_type)
               ())
     end
 end
-
 
 macro fncall(fn, return_type, argtypes, args...)
     f = eval(fn)

@@ -1,7 +1,8 @@
 
+
 ### bam header
 function bam_hdr_init()
-    @fncall(:bam_hdr_init, Ptr{Bam_hdr_t})
+    @fncall(:bam_hdr_init, Ptr{Bam_hdr_t},())
 end
 
 function bam_hdr_read(fp::Ptr{BGZF})
@@ -60,13 +61,14 @@ function bgzf_eof(fp::Ptr{BGZF})
     end
 end
 
+
 function bgzf_getline!(fp::Ptr{BGZF}, delim::Int32, str::Ptr{KStr})
     @fncall(:bgzf_getline, Int32, (Ptr{BGZF}, Int32, Ptr{KStr}), fp, delim, str)
 end
 
 ### bam records
 function bam_init1()
-    @fncall(:bam_init1, Ptr{Bam1_t})
+    @fncall(:bam_init1, Ptr{Bam1_t},())
 end
 
 function bam_destroy1(b::Ptr{Bam1_t})
@@ -131,3 +133,5 @@ end
 function sam_format1!(h::Ptr{Bam_hdr_t}, b::Ptr{Bam1_t}, kstr::Ptr{KStr})
     @fncall(:sam_format1,Cint,(Ptr{Bam_hdr_t},Ptr{Bam1_t},Ptr{KStr}), h, b, kstr)
 end
+
+
