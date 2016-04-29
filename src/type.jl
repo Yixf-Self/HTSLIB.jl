@@ -64,3 +64,21 @@ function kstrToASCII(pkstr::Ptr{KStr})
     kstr = unsafe_load(pkstr)
     kstrToASCII(kstr)
 end
+type Hts_itr_t
+end
+type HtsFile
+end
+type BGZF
+end
+typealias HtsFile SamFile
+
+type Bam_pileup1_t
+end
+
+type Bam_plp_t
+end
+type Bam_mplp_t
+end
+
+
+

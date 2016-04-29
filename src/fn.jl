@@ -1,4 +1,4 @@
-
+### BAM APIs
 
 ### bam header
 function bam_hdr_init()
@@ -111,27 +111,138 @@ function bam_flag2str(flag::Int32)
     @fncall(:bam_flag2str, Ptr{Cchar}, (Int32,), flag)
 end
 
-function bam_itr_destroy(iter)
-#    @fncall(:hts_itr_destroy,)
+function bam_itr_destroy(iter::Ptr{Hts_itr_t})
+    @fncall(:hts_itr_destroy,Void,(Ptr{Hts_itr_t},), iter)
 end
 
-function bam_itr_queryi()
+function bam_itr_queryi(idx::Ptr{Hts_idx_t},tid::Cint,bg::Cint,ed::Cint)
+    @fncall(:sam_itr_queryi, Ptr{Hts_itr_t}, (Ptr{Hts_idx_t}, Cint, Cint, Cint), idx, tid, bg, ed)
 end
 
-function bam_itr_querys()
+function bam_itr_querys(idx::Ptr{Hts_idx_t}, hdr::Ptr{Bam_hdr_t}, region::Ptr{Cchar})
+    @fncall(:sam_itr_querys, Ptr{HTs_itr_t}, (Ptr{Hts_idx_t},Ptr{Bam_hdr_t},Ptr{Cchar}), idx, hdr, region)
 end
 
-function bam_itr_next()
+function bam_itr_next(htsfp::Ptr{Htsfile}, itr::Ptr{Hts_itr_t}, r::Ptr{Void})
+    bgzf = unsafe_load(unsafe_load(htsfp).fp).bgzf
+    @fncall(:hts_itr_next, Cint, (Ptr{BGZF}, Ptr{Hts_itr_t}, Ptr{Void}, Ptr{Void}), bgzf, itr, r, C_NULL)
 end
 
-# hts_idx_t
-#function sam_index_load()
-#    @fncall(:sam_index_load, )
-#end
+function sam_index_load(fp::Ptr{HtsFile}, fn::Ptr{Cchar})
+    @fncall(:sam_index_load, Ptr{Hts_idx_t}, (Ptr{HtsFile}, Ptr{Cchar}), fp, fn)
+end
 
-### sam file
+function sam_index_load2(fp::Ptr{HtsFile}, fn::Ptr{Cchar}, fnidx::Ptr{Cchar})
+    @fncall(:sam_index_load2, Ptr{Hts_idx_t}, (Ptr{HtsFile}, Ptr{Cchar}, Ptr{Cchar}), fp, fn, fnidx)
+end
+
+function sam_index_build(fn::Ptr{Cchar}, min_shift::Cint)
+    @fncall(:sam_index_build, Cint, (Ptr{Cchar}, Cint), fn, min_shift)
+end
+
+function sam_index_build2(fn::Ptr{Cchar}, fnidx::Ptr{Cchar}, min_shift::Cint)
+    @fncall(:sam_index_build2, Cint, (Ptr{Cchar}, Ptr{Cchar}, Cint), fn, fnidx, min_shift)
+end
+
+function sam_itr_destroy(iter)
+    bam_itr_destroy(iter)
+end
+
+function sam_itr_queryi(idx::Ptr{Hts_idx_t}, tid::Cint, bg::Cint, ed::Cint)
+    @fncall(:sam_itr_queryi, Ptr{Hts_itr_t}, (Ptr{Hts_idx_t}, Cint, Cint, Cint), idx, tid, bg, ed)
+end
+
+function sam_itr_querys(idx::Ptr{Hts_idx_t},hdr::Ptr{Bam_hdr_t},region::Ptr{Cchar})
+    @fncall(:sam_itr_querys, Ptr{Hts_itr_t}, (Ptr{Hts_idx_t}, Ptr{Bam_hdr_t}, Ptr{Cchar}), idx, hdr, region))
+end
+
+function sam_itr_next(htsfp::Ptr{HtsFile},itr::Ptr{Hts_itr_t},r::Cint)
+    bam_itr_next(htsfp, itr, r)
+end
+
+function sam_open(fn::Ptr{Cchar}, mode::Ptr{Cchar})
+    @fncall(:hts_open, Ptr{HtsFile}, Ptr{Cchar}, Ptr{Cchar}), fn, mode)
+end
+
+function sam_open_format(fn::Ptr{Cchar}, mode::Ptr{Cchar}, format::Ptr{Cchar})
+    @fncall(:hts_open_format, Ptr{Cchar}, (Ptr{Char}),Ptr{Char},Ptr{Char}), fn, mode, format)
+end
+
+function sam_close(fp::Ptr{HtsFile})
+    @fncall(:hts_close, Cint, (Ptr{HtsFile},), fp)
+end
+
+function sam_open_mode(mode::Ptr{Cchar}, fn::Ptr{Cchar}, format::Ptr{Char})
+    @fncall(:sam_open_mode, Cint, (Ptr{Cchar},Ptr{Cchar},Ptr{Cchar}),mode,fn,format)
+end
+
+function sam_hdr_parse(l_text::Cint, text::Ptr{Cchar})
+    @fncall(:sam_hdr_parse, Ptr{Bam_hdr_t},(Cint, Ptr{Char}), l_text, text)
+end
+
+function sam_hdr_read(fp::Ptr{SamFile})
+    @fncall(:sam_hdr_read, Ptr{Bam_hdr_t}, (Ptr{SamFile},), fp)
+end
+
+function sam_hdr_write(fp::Ptr{SamFile}, h::Ptr{Bam_hdr_t})
+    @fncall(:sam_hdr_write, Cint, (Ptr{SamFile}, Ptr{Bam_hdr_t}), fp, h)
+end
+
+function sam_parse1(s::Ptr{KStr}, h::Ptr{Bam_hdr_t}, b::Ptr{Bam1_t})
+    @fncall(:sam_parse1, Cint, (Ptr{KStr}, Ptr{Bam_hdr_t}, Ptr{Bam1_t}), s, h, b)
+end
+
 function sam_format1!(h::Ptr{Bam_hdr_t}, b::Ptr{Bam1_t}, kstr::Ptr{KStr})
     @fncall(:sam_format1,Cint,(Ptr{Bam_hdr_t},Ptr{Bam1_t},Ptr{KStr}), h, b, kstr)
+end
+
+function sam_read1(fp::Ptr{SamFile}, h::Ptr{Bam_hdr_t}, b::Ptr{Bam1_t})
+    @fncall(:sam_read1, Cint, (Ptr{SamFile}, Ptr{Bam_hdr_t}, Ptr{Bam1_t}), fp, h, b)
+end
+
+function sam_write1(fp::Ptr{SamFile}, h::Ptr{Bam_hdr_t}, b::Ptr{Bam1_t})
+    @fncall(:sam_write1, Cint, (Ptr{SamFile}, Ptr{Bam_hdr_t}, Ptr{Bam1_t}), fp, h, b)
+end
+
+### Manipulating auxilary fields
+
+function bam_aux_get(b::Ptr{Bam1_t})
+    tag = Array{Cchar,1}(2)
+    ptag = pointer(tag)
+    @fncall(:bam_aux_get, Ptr{UInt8}, (Ptr{Bam1_t}, Ptr{Cchar}), b, ptag)
+end
+
+function bam_aux2i(s::Ptr{UInt8})
+    @fncall(:bam_aux2i, Int32, (Ptr{UInt8},), s)
+end
+
+function bam_aux2f(s::Ptr{UInt8})
+    @fncall(:bam_aux2f, Cdouble, (Ptr{UInt8},), s)
+end
+
+function bam_aux2A(s::Ptr{UInt8})
+    @fncall(:bam_aux2A, Cchar, (Ptr{UInt8},), s)
+end
+
+function bam_aux2Z(s::Ptr{UInt8})
+    @fncall(:bam_aux2Z, Ptr{Cchar}, (Ptr{UInt8},), s)
+end
+
+function bam_aux_append(b::Ptr{Bam1_t}, tag::Array{Cchar,1}, typ::Cchar, len::Cint, data::Ptr{UInt8})
+    @assert length(tag) == 2
+    ptag = pointer(tag)
+    @fncall(:bam_aux_append, Void, (Ptr{Bam1_t}, Ptr{Cchar}, Cchar, Cint, Ptr{UInt8}), b, ptag, typ, len, data)
+end
+
+function bam_aux_del(b::Ptr{Bam1_t}, s::Ptr{UInt8})
+    @fncall(:bam_aux_del, Cint, (Ptr{Bam1_t}, Ptr{UInt8}), b, s)
+end
+
+### Pileup and Mpileup
+#typedef int (*bam_plp_auto_f)(void *data, bam1_t *b)
+
+function bam_plp_init(func::Function, data::Ptr{Void} )
+    @fncall(:bam_plp_init, Bam_plp_t, )
 end
 
 
